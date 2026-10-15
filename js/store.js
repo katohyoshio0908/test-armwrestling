@@ -16,6 +16,7 @@ window.Store = (() => {
   const classMap = new Map(classList.map((c) => [c.id, c]));
   const classIdx = (id) => classList.findIndex((c) => c.id === id);
   const roundMap = new Map(D.rounds.map((r) => [r.id, r]));
+  const countryMap = new Map((D.countries || []).map((c) => [c.id, c]));
   const tournamentList = [...D.tournaments].sort((x, y) => y.date.localeCompare(x.date));
   const tournamentMap = new Map(tournamentList.map((t) => [t.id, t]));
 
@@ -43,11 +44,13 @@ window.Store = (() => {
           tournamentId: t.id, date: t.date, classId: d.classId, arm: d.arm, format: d.format, divKey: key,
           loser: m.winner === m.a ? m.b : m.a,
           roundName: r.name,
-          label: ['W', 'L', 'Q'].includes(m.round) && m.no ? `${r.name} ${m.no}回戦` : r.name,
+          // label を書いた試合はその表記を優先（例: 敗者復活戦準決勝）
+          label: m.label || (['W', 'L', 'Q'].includes(m.round) && m.no ? `${r.name} ${m.no}回戦` : r.name),
+          customLabel: !!m.label,
           sortKey: (ROUND_SORT[m.round] || 0) + (m.no || 0),
         };
       });
-      const div = { key, tournamentId: t.id, date: t.date, classId: d.classId, arm: d.arm, format: d.format, final: !!d.final, entries: d.entries, matches: ms };
+      const div = { key, tournamentId: t.id, date: t.date, classId: d.classId, arm: d.arm, format: d.format, final: !!d.final, entries: d.entries, matches: ms, incomplete: !!d.incomplete, note: d.note || '' };
       div.standings = computeStandings(div);
       divisions.push(div);
       allMatches.push(...ms);
@@ -77,11 +80,15 @@ window.Store = (() => {
         top = table.slice(0, 3).map((r) => r.athleteId);
       }
     } else {
+      // 決勝が未登録でも、敗者復活戦決勝があれば3位だけは確定する
       const f = find('F2') || find('F');
       const lf = find('LF');
-      if (f) top = [f.winner, f.loser];
-      if (lf) top.push(lf.loser);
+      const res = [];
+      if (f) res.push({ athleteId: f.winner, place: 1 }, { athleteId: f.loser, place: 2 });
+      if (lf) res.push({ athleteId: lf.loser, place: 3 });
+      return res;
     }
+    if (!div.matches.length) return [];
     return top.map((athleteId, i) => ({ athleteId, place: i + 1 }));
   }
 
@@ -108,6 +115,7 @@ window.Store = (() => {
     return {
       ...a,
       nicknames: [].concat(a.nickname || []).filter(Boolean), // あだ名は文字列でも配列でも可
+      countryName: (countryMap.get(a.nationality) || { name: a.nationality || '' }).name,
       arms: [...arms],
       dominant: arms.size === 2 ? 'B' : arms.has('R') ? 'R' : arms.has('L') ? 'L' : null,
       classIds: [...classIds].sort(byClassIdx),
@@ -221,7 +229,7 @@ window.Store = (() => {
   function searchAthletes(kw, f = {}) {
     const k = norm(kw);
     return athleteList.filter((a) =>
-      (!k || [a.name, a.nameEn, ...a.nicknames, a.team].some((x) => norm(x).includes(k))) &&
+      (!k || [a.name, a.nameEn, ...a.nicknames, a.team, a.countryName].some((x) => norm(x).includes(k))) &&
       (!f.classId || a.classIds.includes(f.classId)) &&
       (!f.arm || (f.arm === 'B' ? a.arms.length === 2 : a.arms.includes(f.arm))));
   }

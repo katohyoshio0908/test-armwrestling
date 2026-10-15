@@ -6,6 +6,8 @@
   // ---------- ユーティリティ ----------
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmtDate = (d) => d.replace(/-/g, '.');
+  // 複数日開催の大会は「開始〜終了」で表示
+  const fmtPeriod = (t) => (t.endDate && t.endDate !== t.date ? `${fmtDate(t.date)}〜${fmtDate(t.endDate)}` : fmtDate(t.date));
   const pad2 = (n) => String(n).padStart(2, '0');
   const fmtSec = (s) => (s >= 3600 ? `${Math.floor(s / 3600)}:${pad2(Math.floor(s / 60) % 60)}:${pad2(s % 60)}` : `${Math.floor(s / 60)}:${pad2(s % 60)}`);
   const pct = (w, t) => (t ? Math.round((w / t) * 100) : 0);
@@ -42,6 +44,12 @@
 
   // ---------- 共通パーツ ----------
   const photo = (a, size = 'sm', alt = '') => `<img class="photo ${size}" src="${esc(a.photo)}" alt="${esc(alt)}" loading="lazy">`;
+  // 日本人以外: アルファベット表記がメイン、カタカナがサブ / 日本人: 漢字名のみ
+  const isForeign = (a) => a.nationality !== 'JPN' && !!a.nameEn;
+  const mainName = (a) => (isForeign(a) ? a.nameEn : a.name);
+  const subName = (a) => (isForeign(a) ? a.name : '');
+  // 選手一覧・選手ページの副表記（日本人はアルファベット、日本人以外はカタカナ）
+  const altName = (a) => (isForeign(a) ? a.name : a.nameEn || '');
   const athleteLink = (a) => `<a href="#/athletes/${a.id}">${esc(a.name)}</a>`;
   const chip = (text, cls = '') => `<span class="chip ${cls}">${esc(text)}</span>`;
   const armChip = (arm) => chip(ARM[arm], `arm-${arm}`);
@@ -52,11 +60,13 @@
   const nick = (a) => (a.nicknames.length ? `<span class="nick">${quoted(a)}</span>` : '');
   // 直近大会の出場階級（複数あれば全部）
   const classChips = (a) => a.latestClassIds.map((c) => chip(S.cls(c).name)).join('');
+  const countryChip = (a) => (a.countryName ? chip(`国籍: ${a.countryName}`, 'country') : '');
 
   function matchRow(m, pov) {
     const t = S.tournament(m.tournamentId);
     const A = S.athlete(m.a), B = S.athlete(m.b);
-    const side = (x) => `<span class="mr-side ${m.winner === x.id ? 'win' : ''}">${photo(x, 'sm')}<span>${esc(x.name)}</span></span>`;
+    // 日本人以外はアルファベット表記を大きく、その下にカタカナを小さく
+    const side = (x) => `<span class="mr-side ${m.winner === x.id ? 'win' : ''}">${photo(x, 'sm')}<span class="mr-name"><span>${esc(mainName(x))}</span>${subName(x) ? `<small class="name-sub">${esc(subName(x))}</small>` : ''}</span></span>`;
     const badge = pov ? (m.winner === pov ? '<span class="badge w">WIN</span>' : '<span class="badge l">LOSS</span>') : '';
     return `<a class="match-row" href="#/matches/${m.id}">
       ${badge}
@@ -119,7 +129,7 @@
     const line = (id) => {
       const a = S.athlete(id);
       const w = m.winner === id;
-      return `<span class="bx-line ${w ? 'win' : ''}">${photo(a, 'xs')}<span class="grow">${esc(a.name)}</span>${w ? '<b>WIN</b>' : ''}</span>`;
+      return `<span class="bx-line ${w ? 'win' : ''}" title="${esc(a.name)}">${photo(a, 'xs')}<span class="grow">${esc(mainName(a))}</span>${w ? '<b>WIN</b>' : ''}</span>`;
     };
     return `<a class="bx" href="#/matches/${m.id}" title="${esc(m.label)}：試合ページへ">${line(m.a)}${line(m.b)}<span class="bx-foot">${esc(m.method)}${m.video ? '<span class="bx-v">▶ 動画</span>' : ''}</span></a>`;
   }
@@ -127,7 +137,10 @@
 
   function roundColumns(ms, round, finalRound, finalLabel) {
     const nos = [...new Set(ms.filter((m) => m.round === round).map((m) => m.no))].sort((a, b) => a - b);
-    const cols = nos.map((no) => bkCol(`${no}回戦`, ms.filter((m) => m.round === round && m.no === no).sort((x, y) => x.slot - y.slot)));
+    const cols = nos.map((no) => {
+      const col = ms.filter((m) => m.round === round && m.no === no).sort((x, y) => x.slot - y.slot);
+      return bkCol(col[0].customLabel ? col[0].label : `${no}回戦`, col);
+    });
     const f = ms.filter((m) => m.round === finalRound);
     if (f.length) cols.push(bkCol(finalLabel, f, true));
     return cols.join('');
@@ -143,7 +156,7 @@
         <h3 class="de-title"><span class="dot f"></span>決勝</h3>
         <p class="muted small">本戦決勝の勝者 vs 敗者復活戦決勝の勝者</p>
         ${finals.map((m) => `<div class="de-fm"><h4>${esc(m.roundName)}</h4>${bx(m)}</div>`).join('')}
-        ${finals.length === 1 ? '<p class="muted small">本戦側が勝利したため決勝2回戦目はなし</p>' : '<p class="muted small">敗者復活戦側が1回戦目を制したため2回戦目を実施</p>'}
+        ${!finals.length ? '<p class="muted small">決勝の結果は未登録です</p>' : div.incomplete ? '' : finals.length === 1 ? '<p class="muted small">本戦側が勝利したため決勝2回戦目はなし</p>' : '<p class="muted small">敗者復活戦側が1回戦目を制したため2回戦目を実施</p>'}
       </div>
     </div>`;
   }
@@ -193,17 +206,30 @@
 
   function podium(div) {
     if (!div.standings.length) return empty('結果はまだありません');
-    return `<div class="podium">${div.standings.map((p) => {
+    return `<div class="podium">${[1, 2, 3].map((place) => {
+      const p = div.standings.find((x) => x.place === place);
+      // 決勝が未登録などで順位が決まっていない枠
+      if (!p) return `<div class="pod p${place} pod-empty"><span class="pod-rank">${place}<small>位</small></span><span class="muted">未確定</span><small class="muted">試合結果が未登録です</small></div>`;
       const a = S.athlete(p.athleteId);
       return `<a class="pod p${p.place}" href="#/athletes/${a.id}">
         <span class="pod-rank">${p.place}<small>位</small></span>
         ${photo(a, 'xxl', a.name)}
-        <strong>${esc(a.name)}</strong>
+        <strong>${esc(mainName(a))}</strong>
+        ${subName(a) ? `<span class="name-sub">${esc(subName(a))}</span>` : ''}
         ${nick(a)}
         <small class="muted">${[a.team, S.weightOf(div.tournamentId, a.id) != null ? `計量 ${kg(S.weightOf(div.tournamentId, a.id))}` : ''].filter(Boolean).map(esc).join(' ・ ')}</small>
         ${multiNote(div.tournamentId, a.id, div.classId)}
       </a>`;
     }).join('')}</div>`;
+  }
+
+  // 試合結果が未登録の部門：出場選手の一覧（国名順。順位を示さないよう並べ替える）
+  function entrantList(div) {
+    const list = div.entries.map((id) => S.athlete(id))
+      .sort((x, y) => x.countryName.localeCompare(y.countryName, 'ja') || x.name.localeCompare(y.name, 'ja'));
+    return `<h3 class="de-title"><span class="dot q"></span>出場選手 <small class="muted">${list.length}名</small></h3>
+      <p class="muted small">試合結果・順位は未登録です。</p>
+      <div class="entrants">${list.map((a) => `<a class="entrant" href="#/athletes/${a.id}">${photo(a, 'sm')}<span class="grow"><strong>${esc(mainName(a))}</strong><small class="muted">${esc(altName(a))}</small></span><span class="chip country">${esc(a.countryName)}</span></a>`).join('')}</div>`;
   }
 
   // この大会で複数階級に出場した選手の一覧
@@ -292,7 +318,7 @@
         <div class="grow">
           <div class="chips">${t.sample ? chip('サンプル', 'sample') : ''}${orgChip(t)}${chip(t.level)}${formats.map((f) => chip(f)).join('')}</div>
           <h3>${esc(t.name)}</h3>
-          <p class="muted">${esc(t.venue)} ・ ${divs.length}部門 ・ ${n}試合</p>
+          <p class="muted">${t.endDate ? `${fmtPeriod(t)} ・ ` : ''}${esc(t.venue)} ・ ${divs.length}部門 ・ ${n ? `${n}試合` : `出場${new Set(divs.flatMap((d) => d.entries)).size}名（結果未登録）`}</p>
           <ul class="t-champs">${divs.filter((d) => d.standings.length).map((d) => `<li>${esc(S.cls(d.classId).name)} ${ARM[d.arm]}: <strong>${esc(S.athlete(d.standings[0].athleteId).name)}</strong></li>`).join('')}</ul>
         </div>
       </a>`;
@@ -339,13 +365,14 @@
       <nav class="crumbs"><a href="#/tournaments">大会一覧</a> / ${esc(t.short)}</nav>
       <header class="t-head">
         <h1>${esc(t.name)}</h1>
-        <p class="muted">${t.sample ? chip('サンプル', 'sample') + ' ' : ''}${t.organizer ? orgChip(t) + ' ' : ''}${fmtDate(t.date)} ・ ${esc(t.venue)} ・ ${esc(t.level)}</p>
+        <p class="muted">${t.sample ? chip('サンプル', 'sample') + ' ' : ''}${t.organizer ? orgChip(t) + ' ' : ''}${fmtPeriod(t)} ・ ${esc(t.venue)} ・ ${esc(t.level)}</p>
       </header>
       <div class="tabs">${cids.map((cc) => tab(cc, armFor(cc), S.cls(cc).name, cc === c)).join('')}</div>
       <div class="tabs sub">${arms.map((aa) => tab(c, aa, ARM[aa], aa === arm)).join('')}<span class="chip fmt">${esc(S.formatName(div.format))}</span></div>
 
       <section class="card result-card">
-        ${div.format === 'league' ? leagueView(div) : doubleBracket(div)}
+        ${div.incomplete ? `<p class="partial-note">この部門の試合データは一部欠けています。${esc(div.note)}</p>` : ''}
+        ${!div.matches.length ? entrantList(div) : div.format === 'league' ? leagueView(div) : doubleBracket(div)}
       </section>
 
       <section>
@@ -364,9 +391,9 @@
     return `<a class="card a-card" href="#/athletes/${a.id}">
       ${photo(a, 'lg')}
       <span class="grow">
-        <strong>${esc(a.name)}</strong>
-        <small class="muted">${a.nicknames.length ? `${quoted(a)} ` : ''}${esc(a.nameEn)}</small>
-        <span class="chips">${classChips(a)}${a.dominant ? chip(`利き腕: ${DOMINANT[a.dominant]}`, a.dominant === 'B' ? 'arm-B' : `arm-${a.dominant}`) : ''}${a.team ? chip(a.team) : ''}</span>
+        <strong>${esc(mainName(a))}</strong>
+        <small class="muted">${a.nicknames.length ? `${quoted(a)} ` : ''}${esc(altName(a))}</small>
+        <span class="chips">${a.nationality !== 'JPN' ? countryChip(a) : ''}${classChips(a)}${a.dominant ? chip(`利き腕: ${DOMINANT[a.dominant]}`, a.dominant === 'B' ? 'arm-B' : `arm-${a.dominant}`) : ''}${a.team ? chip(a.team) : ''}</span>
       </span>
       <span class="a-rec"><strong>${s.wins}-${s.losses}</strong><small>${s.titles ? `優勝 ${s.titles}回` : `勝率 ${pct(s.wins, s.total)}%`}</small></span>
     </a>`;
@@ -419,13 +446,14 @@
     return {
       title: a.name,
       html: `
-      <nav class="crumbs"><a href="#/athletes">選手一覧</a> / ${esc(a.name)}</nav>
+      <nav class="crumbs"><a href="#/athletes">選手一覧</a> / ${esc(mainName(a))}</nav>
       <header class="profile card">
         ${photo(a, 'profile', a.name)}
         <div class="grow">
-          <h1>${esc(a.name)} <small class="muted">${esc(a.nameEn)}</small></h1>
+          <h1>${esc(mainName(a))} <small class="muted">${esc(altName(a))}</small></h1>
           ${a.nicknames.length ? `<p class="nick-lg">${quoted(a)}</p>` : ''}
           <div class="chips">
+            ${countryChip(a)}
             ${classChips(a)}
             ${a.dominant ? chip(`利き腕: ${DOMINANT[a.dominant]}`, a.dominant === 'B' ? 'arm-B' : `arm-${a.dominant}`) : ''}
             ${a.latestWeight != null ? chip(`直近の計量: ${kg(a.latestWeight)}`) : ''}
@@ -537,8 +565,8 @@
       const s = S.athleteStats(x.id);
       return `<a class="fighter ${m.winner === x.id ? 'win' : 'lose'}" href="#/athletes/${x.id}">
         ${photo(x, 'xl', x.name)}
-        <strong>${esc(x.name)}</strong>${nick(x)}<small>${esc(x.team)}</small>
-        <span class="muted small">${S.weightOf(t.id, x.id) != null ? `計量 ${kg(S.weightOf(t.id, x.id))} ・ ` : ''}通算 ${s.wins}-${s.losses}</span>
+        <strong>${esc(mainName(x))}</strong>${subName(x) ? `<span class="name-sub">${esc(subName(x))}</span>` : ''}${nick(x)}<small>${esc(x.team)}</small>
+        <span class="muted small">${x.countryName ? `${esc(x.countryName)} ・ ` : ''}${S.weightOf(t.id, x.id) != null ? `計量 ${kg(S.weightOf(t.id, x.id))} ・ ` : ''}通算 ${s.wins}-${s.losses}</span>
         ${multiNote(t.id, x.id, m.classId)}
         <span class="result">${m.winner === x.id ? 'WIN' : 'LOSE'}</span>
       </a>`;
@@ -575,9 +603,10 @@
             <dl class="facts">
               <div><dt>試合区分</dt><dd>${esc(m.label)}</dd></div>
               <div><dt>決着</dt><dd>${esc(m.method)}</dd></div>
+              ${m.note ? `<div><dt>備考</dt><dd>${esc(m.note)}</dd></div>` : ''}
               <div><dt>大会形式</dt><dd>${esc(S.formatName(m.format))}</dd></div>
               <div><dt>大会</dt><dd><a href="${divHref}">${esc(t.name)}</a></dd></div>
-              <div><dt>日付・会場</dt><dd>${fmtDate(t.date)} ${esc(t.venue)}</dd></div>
+              <div><dt>日付・会場</dt><dd>${fmtPeriod(t)} ${esc(t.venue)}</dd></div>
             </dl>
             <a class="btn block" href="${divHref}">${m.format === 'league' ? 'リーグ表' : 'トーナメント表'}で見る</a>
           </div>
@@ -726,7 +755,7 @@
     view = view || viewNotFound();
     app.innerHTML = view.html;
     if (view.mount) view.mount(app);
-    document.title = (view.title ? `${view.title} | ` : '') + 'ARM RESULTS';
+    document.title = (view.title ? `${view.title} | ` : '') + '加藤 ARM';
     const section = path.split('/')[1] || 'home';
     document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === section));
     if (path !== lastPath) window.scrollTo(0, 0);
