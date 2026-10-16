@@ -288,8 +288,110 @@ window.AW_DATA = {
             { id: 'waf2025-MM80-R-F', round: 'F', no: 0, slot: 1, a: 'w21', b: 'w20', winner: 'w21', method: 'ピン勝ち', note: 'ストラップ' },
           ],
         },
-        { classId: 'MM90', arm: 'R', format: 'double', matches: [], entries: ['w43', 'w44', 'w45', 'w46', 'w47', 'w48', 'w49', 'w50', 'w51', 'w52', 'w53', 'w54', 'w55', 'w56', 'w57', 'w58', 'w59', 'w60'] },
-        { classId: 'MM90', arm: 'L', format: 'double', matches: [], entries: ['w43', 'w61', 'w47', 'w50', 'w46', 'w55', 'w62', 'w56', 'w44', 'w54', 'w59', 'w63', 'w52', 'w53', 'w51', 'w58', 'w57'] },
+        {
+          // 出典: WAF2025_マスターズ90kg左右.xlsx（一部の試合が欠けているため incomplete）
+          classId: 'MM90', arm: 'R', format: 'double', incomplete: true,
+          note: '本戦2回戦のうち2試合（Jan Nymo・Mikael Sjodin が敗れた試合）のデータが未登録です。',
+          entries: ['w43', 'w44', 'w45', 'w46', 'w47', 'w48', 'w49', 'w50', 'w51', 'w52', 'w53', 'w54', 'w55', 'w56', 'w57', 'w58', 'w59', 'w60'],
+          matches: [
+            // 本戦1回戦
+            { id: 'waf2025-MM90-R-W1-1', round: 'W', no: 1, slot: 1, a: 'w56', b: 'w60', winner: 'w56', method: '2ファール勝ち', note: 'レフリーズグリップ' },
+            { id: 'waf2025-MM90-R-W1-2', round: 'W', no: 1, slot: 2, a: 'w46', b: 'w47', winner: 'w46', method: 'ピン勝ち', note: 'ストラップ' },
+            { id: 'waf2025-MM90-R-W1-3', round: 'W', no: 1, slot: 3, a: 'w55', b: 'w59', winner: 'w55', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-R-W1-4', round: 'W', no: 1, slot: 4, a: 'w43', b: 'w49', winner: 'w43', method: '2ファール勝ち' },
+            { id: 'waf2025-MM90-R-W1-5', round: 'W', no: 1, slot: 5, a: 'w50', b: 'w58', winner: 'w50', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-R-W1-6', round: 'W', no: 1, slot: 6, a: 'w48', b: 'w53', winner: 'w48', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-R-W1-7', round: 'W', no: 1, slot: 7, a: 'w57', b: 'w54', winner: 'w54', method: '不戦勝' },
+            { id: 'waf2025-MM90-R-W1-8', round: 'W', no: 1, slot: 8, a: 'w44', b: 'w52', winner: 'w44', method: 'ピン勝ち', note: 'レフリーズグリップ' },
+            { id: 'waf2025-MM90-R-W1-9', round: 'W', no: 1, slot: 9, a: 'w51', b: 'w45', winner: 'w45', method: 'ピン勝ち', note: 'レフリーズグリップ' },
+            // 本戦2回戦
+            { id: 'waf2025-MM90-R-W2-1', round: 'W', no: 2, slot: 1, a: 'w50', b: 'w48', winner: 'w48', method: '不明', note: '動画不安定' },
+            { id: 'waf2025-MM90-R-W2-2', round: 'W', no: 2, slot: 2, a: 'w54', b: 'w44', winner: 'w44', method: '不明', note: '動画不安定' },
+            // 本戦3回戦
+            { id: 'waf2025-MM90-R-W3-1', round: 'W', no: 3, slot: 1, a: 'w45', b: 'w46', winner: 'w46', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-R-W3-2', round: 'W', no: 3, slot: 2, a: 'w43', b: 'w48', winner: 'w43', method: 'ピン勝ち' },
+            // 本戦4回戦
+            { id: 'waf2025-MM90-R-W4-1', round: 'W', no: 4, slot: 1, a: 'w44', b: 'w46', winner: 'w44', method: 'ピン勝ち', note: 'ストラップ' },
+            // 本戦決勝
+            { id: 'waf2025-MM90-R-WF', round: 'WF', no: 0, slot: 1, a: 'w43', b: 'w44', winner: 'w43', method: 'ピン勝ち', note: 'チームプレイの可能性あり' },
+            // 敗者復活戦1回戦
+            { id: 'waf2025-MM90-R-L1-1', round: 'L', no: 1, slot: 1, a: 'w60', b: 'w47', winner: 'w47', method: 'ピン勝ち', note: 'レフリーズグリップ／Excelでは「本戦2回戦」表記。両者とも本戦1回戦の敗者のため敗者復活戦1回戦として登録' },
+            { id: 'waf2025-MM90-R-L1-2', round: 'L', no: 1, slot: 2, a: 'w59', b: 'w49', winner: 'w49', method: 'ウィナーズポジション', note: '勝ち方は要確認（Excelの記載のまま）' },
+            { id: 'waf2025-MM90-R-L1-3', round: 'L', no: 1, slot: 3, a: 'w58', b: 'w53', winner: 'w53', method: 'ウィナーズポジション', note: '勝ち方は要確認（Excelの記載のまま）' },
+            { id: 'waf2025-MM90-R-L1-4', round: 'L', no: 1, slot: 4, a: 'w57', b: 'w52', winner: 'w52', method: '不戦勝' },
+            // 敗者復活戦2回戦
+            { id: 'waf2025-MM90-R-L2-1', round: 'L', no: 2, slot: 1, a: 'w51', b: 'w56', winner: 'w51', method: '2ファール勝ち', note: 'レフリーズグリップ' },
+            { id: 'waf2025-MM90-R-L2-2', round: 'L', no: 2, slot: 2, a: 'w55', b: 'w50', winner: 'w50', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-R-L2-3', round: 'L', no: 2, slot: 3, a: 'w54', b: 'w47', winner: 'w47', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-R-L2-4', round: 'L', no: 2, slot: 4, a: 'w49', b: 'w53', winner: 'w49', method: 'ピン勝ち', note: 'ストラップ' },
+            // 敗者復活戦3回戦
+            { id: 'waf2025-MM90-R-L3-1', round: 'L', no: 3, slot: 1, a: 'w52', b: 'w45', winner: 'w45', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-R-L3-2', round: 'L', no: 3, slot: 2, a: 'w48', b: 'w51', winner: 'w48', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-R-L3-3', round: 'L', no: 3, slot: 3, a: 'w50', b: 'w47', winner: 'w47', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-R-L3-4', round: 'L', no: 3, slot: 4, a: 'w49', b: 'w46', winner: 'w46', method: '2ファール勝ち' },
+            // 敗者復活戦4回戦
+            { id: 'waf2025-MM90-R-L4-1', round: 'L', no: 4, slot: 1, a: 'w45', b: 'w48', winner: 'w45', method: '2ファール勝ち', note: 'レフリーズグリップ' },
+            // 敗者復活戦5回戦
+            { id: 'waf2025-MM90-R-L5-1', round: 'L', no: 5, slot: 1, a: 'w47', b: 'w45', winner: 'w45', method: 'ピン勝ち' },
+            // 敗者復活戦6回戦
+            { id: 'waf2025-MM90-R-L6-1', round: 'L', no: 6, slot: 1, a: 'w46', b: 'w45', winner: 'w45', method: '2ファール勝ち', note: 'ストラップ' },
+            // 敗者復活戦決勝
+            { id: 'waf2025-MM90-R-LF', round: 'LF', no: 0, slot: 1, a: 'w44', b: 'w45', winner: 'w44', method: 'ピン勝ち', note: '右腕級の終盤（画面にセミファイナルの表示あり）。' },
+            // 決勝
+            { id: 'waf2025-MM90-R-F', round: 'F', no: 0, slot: 1, a: 'w43', b: 'w44', winner: 'w43', method: 'ピン勝ち' },
+          ],
+        },
+        {
+          // 出典: WAF2025_マスターズ90kg左右.xlsx
+          classId: 'MM90', arm: 'L', format: 'double',
+          entries: ['w43', 'w61', 'w47', 'w50', 'w46', 'w55', 'w62', 'w56', 'w44', 'w54', 'w59', 'w63', 'w52', 'w53', 'w51', 'w58', 'w57'],
+          matches: [
+            // 本戦1回戦
+            { id: 'waf2025-MM90-L-W1-1', round: 'W', no: 1, slot: 1, a: 'w46', b: 'w61', winner: 'w61', method: '2ファール勝ち' },
+            { id: 'waf2025-MM90-L-W1-2', round: 'W', no: 1, slot: 2, a: 'w44', b: 'w57', winner: 'w44', method: '不戦勝' },
+            { id: 'waf2025-MM90-L-W1-3', round: 'W', no: 1, slot: 3, a: 'w56', b: 'w58', winner: 'w56', method: 'ピン勝ち', note: 'ストラップ' },
+            { id: 'waf2025-MM90-L-W1-4', round: 'W', no: 1, slot: 4, a: 'w59', b: 'w47', winner: 'w47', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-L-W1-5', round: 'W', no: 1, slot: 5, a: 'w62', b: 'w63', winner: 'w63', method: '不戦勝' },
+            { id: 'waf2025-MM90-L-W1-6', round: 'W', no: 1, slot: 6, a: 'w51', b: 'w43', winner: 'w43', method: 'ピン勝ち', note: 'レフリーズグリップ' },
+            { id: 'waf2025-MM90-L-W1-7', round: 'W', no: 1, slot: 7, a: 'w55', b: 'w54', winner: 'w55', method: 'ピン勝ち', note: 'ストラップ' },
+            { id: 'waf2025-MM90-L-W1-8', round: 'W', no: 1, slot: 8, a: 'w53', b: 'w50', winner: 'w50', method: 'ピン勝ち' },
+            // 本戦2回戦
+            { id: 'waf2025-MM90-L-W2-1', round: 'W', no: 2, slot: 1, a: 'w52', b: 'w61', winner: 'w61', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-L-W2-2', round: 'W', no: 2, slot: 2, a: 'w44', b: 'w56', winner: 'w44', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-L-W2-3', round: 'W', no: 2, slot: 3, a: 'w47', b: 'w63', winner: 'w47', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-L-W2-4', round: 'W', no: 2, slot: 4, a: 'w43', b: 'w55', winner: 'w43', method: 'ピン勝ち' },
+            // 本戦3回戦
+            { id: 'waf2025-MM90-L-W3-1', round: 'W', no: 3, slot: 1, a: 'w50', b: 'w61', winner: 'w61', method: 'ピン勝ち', note: 'ストラップ' },
+            { id: 'waf2025-MM90-L-W3-2', round: 'W', no: 3, slot: 2, a: 'w44', b: 'w47', winner: 'w47', method: 'ピン勝ち', note: 'ストラップ' },
+            // 本戦4回戦
+            { id: 'waf2025-MM90-L-W4-1', round: 'W', no: 4, slot: 1, a: 'w43', b: 'w61', winner: 'w43', method: 'ピン勝ち' },
+            // 本戦決勝
+            { id: 'waf2025-MM90-L-WF', round: 'WF', no: 0, slot: 1, a: 'w47', b: 'w43', winner: 'w43', method: 'ピン勝ち' },
+            // 敗者復活戦1回戦
+            { id: 'waf2025-MM90-L-L1-1', round: 'L', no: 1, slot: 1, a: 'w46', b: 'w57', winner: 'w46', method: '不戦勝' },
+            { id: 'waf2025-MM90-L-L1-2', round: 'L', no: 1, slot: 2, a: 'w58', b: 'w59', winner: 'w59', method: 'ピン勝ち', note: 'ストラップ' },
+            { id: 'waf2025-MM90-L-L1-3', round: 'L', no: 1, slot: 3, a: 'w62', b: 'w51', winner: 'w62', method: '2ファール勝ち', note: 'レフリーズグリップ、ストラップ' },
+            { id: 'waf2025-MM90-L-L1-4', round: 'L', no: 1, slot: 4, a: 'w54', b: 'w53', winner: 'w54', method: '2ファール勝ち' },
+            // 敗者復活戦2回戦
+            { id: 'waf2025-MM90-L-L2-1', round: 'L', no: 2, slot: 1, a: 'w52', b: 'w56', winner: 'w56', method: 'ピン勝ち', note: 'レフリーズグリップ' },
+            { id: 'waf2025-MM90-L-L2-2', round: 'L', no: 2, slot: 2, a: 'w63', b: 'w55', winner: 'w55', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-L-L2-3', round: 'L', no: 2, slot: 3, a: 'w46', b: 'w59', winner: 'w46', method: 'ピン勝ち', note: 'ストラップ' },
+            { id: 'waf2025-MM90-L-L2-4', round: 'L', no: 2, slot: 4, a: 'w62', b: 'w54', winner: 'w62', method: 'ウィナーズポジション', note: '勝ち方は要確認（Excelの記載のまま）' },
+            // 敗者復活戦3回戦
+            { id: 'waf2025-MM90-L-L3-1', round: 'L', no: 3, slot: 1, a: 'w50', b: 'w44', winner: 'w50', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-L-L3-2', round: 'L', no: 3, slot: 2, a: 'w56', b: 'w55', winner: 'w55', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-L-L3-3', round: 'L', no: 3, slot: 3, a: 'w46', b: 'w62', winner: 'w46', method: 'ピン勝ち', note: 'ストラップ' },
+            // 敗者復活戦4回戦
+            { id: 'waf2025-MM90-L-L4-1', round: 'L', no: 4, slot: 1, a: 'w61', b: 'w55', winner: 'w61', method: 'ピン勝ち' },
+            { id: 'waf2025-MM90-L-L4-2', round: 'L', no: 4, slot: 2, a: 'w50', b: 'w46', winner: 'w50', method: 'ピン勝ち', note: 'ストラップ' },
+            // 敗者復活戦5回戦
+            { id: 'waf2025-MM90-L-L5-1', round: 'L', no: 5, slot: 1, a: 'w61', b: 'w50', winner: 'w61', method: 'ピン勝ち', note: 'ストラップ' },
+            // 敗者復活戦決勝
+            { id: 'waf2025-MM90-L-LF', round: 'LF', no: 0, slot: 1, a: 'w47', b: 'w61', winner: 'w61', method: 'ピン勝ち', note: 'ストラップ' },
+            // 決勝
+            { id: 'waf2025-MM90-L-F', round: 'F', no: 0, slot: 1, a: 'w43', b: 'w61', winner: 'w43', method: 'ピン勝ち', note: 'レフリーズグリップ' },
+          ],
+        },
       ],
     },
     {
@@ -459,5 +561,70 @@ window.AW_DATA = {
     'waf2025-MM80-R-L1-1': { url: 'https://www.youtube.com/watch?v=bKebygn7H8s', start: 11940, end: 11970 }, // No.18 3:19:00〜3:19:30
     'waf2025-MM80-R-L1-2': { url: 'https://www.youtube.com/watch?v=bKebygn7H8s', start: 12000, end: 12240 }, // No.19 3:20:00〜3:24:00
     'waf2025-MM80-R-F': { url: 'https://www.youtube.com/watch?v=POuaCNJsUcY', start: 6597, end: 6780 }, // No.20 1:49:57〜1:53:00
+    // 2025 WAF世界選手権 マスターズ男子 -90kg 左腕・右腕（Excelの時刻を秒に換算）
+    'waf2025-MM90-L-W1-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 5120, end: 5326 }, // No.1 1:25:20〜1:28:46
+    'waf2025-MM90-L-W1-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 5335, end: 5448 }, // No.2 1:28:55〜1:30:48
+    'waf2025-MM90-L-W1-3': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 5460, end: 5619 }, // No.3 1:31:00〜1:33:39
+    'waf2025-MM90-L-W1-4': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 5630, end: 5708 }, // No.4 1:33:50〜1:35:08
+    'waf2025-MM90-L-W1-5': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 5720, end: 5810 }, // No.5 1:35:20〜1:36:50
+    'waf2025-MM90-L-W1-6': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 5820, end: 6024 }, // No.6 1:37:00〜1:40:24
+    'waf2025-MM90-L-W1-7': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 6035, end: 6300 }, // No.7 1:40:35〜1:45:00
+    'waf2025-MM90-L-W1-8': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 6310, end: 6399 }, // No.8 1:45:10〜1:46:39
+    'waf2025-MM90-L-W2-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 6410, end: 6583 }, // No.9 1:46:50〜1:49:43
+    'waf2025-MM90-L-W2-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 6590, end: 6664 }, // No.10 1:49:50〜1:51:04
+    'waf2025-MM90-L-W2-3': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 6670, end: 6753 }, // No.11 1:51:10〜1:52:33
+    'waf2025-MM90-L-W2-4': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 6760, end: 6832 }, // No.12 1:52:40〜1:53:52
+    'waf2025-MM90-L-W3-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 7510, end: 7781 }, // No.17 2:05:10〜2:09:41
+    'waf2025-MM90-L-W3-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 7790, end: 7935 }, // No.18 2:09:50〜2:12:15
+    'waf2025-MM90-L-W4-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 8605, end: 8675 }, // No.23 2:23:25〜2:24:35
+    'waf2025-MM90-L-WF': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 9621, end: 9693 }, // No.29 2:40:21〜2:41:33
+    'waf2025-MM90-L-L1-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 6840, end: 6922 }, // No.13 1:54:00〜1:55:22
+    'waf2025-MM90-L-L1-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 6930, end: 7103 }, // No.14 1:55:30〜1:58:23
+    'waf2025-MM90-L-L1-3': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 7110, end: 7368 }, // No.15 1:58:30〜2:02:48
+    'waf2025-MM90-L-L1-4': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 7380, end: 7498 }, // No.16 2:03:00〜2:04:58
+    'waf2025-MM90-L-L2-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 7945, end: 8241 }, // No.19 2:12:25〜2:17:21
+    'waf2025-MM90-L-L2-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 8250, end: 8302 }, // No.20 2:17:30〜2:18:22
+    'waf2025-MM90-L-L2-3': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 8310, end: 8476 }, // No.21 2:18:30〜2:21:16
+    'waf2025-MM90-L-L2-4': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 8485, end: 8596 }, // No.22 2:21:25〜2:23:16
+    'waf2025-MM90-L-L3-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 8680, end: 8815 }, // No.24 2:24:40〜2:26:55
+    'waf2025-MM90-L-L3-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 8820, end: 8883 }, // No.25 2:27:00〜2:28:03
+    'waf2025-MM90-L-L3-3': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 8895, end: 9159 }, // No.26 2:28:15〜2:32:39
+    'waf2025-MM90-L-L4-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 9165, end: 9279 }, // No.27 2:32:45〜2:34:39
+    'waf2025-MM90-L-L4-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 9285, end: 9614 }, // No.28 2:34:45〜2:40:14
+    'waf2025-MM90-L-L5-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 9705, end: 9815 }, // No.30 2:41:45〜2:43:35
+    'waf2025-MM90-L-LF': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 9825, end: 10019 }, // No.31 2:43:45〜2:46:59
+    'waf2025-MM90-L-F': { url: 'https://www.youtube.com/watch?v=POuaCNJsUcY', start: 1488, end: 1630 }, // No.32 0:24:48〜0:27:10
+    'waf2025-MM90-R-W1-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 14637, end: 14796 }, // No.33 4:03:57〜4:06:36
+    'waf2025-MM90-R-W1-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 14805, end: 15148 }, // No.34 4:06:45〜4:12:28
+    'waf2025-MM90-R-W1-3': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 15156, end: 15216 }, // No.35 4:12:36〜4:13:36
+    'waf2025-MM90-R-W1-4': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 15225, end: 15307 }, // No.36 4:13:45〜4:15:07
+    'waf2025-MM90-R-W1-5': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 15318, end: 15381 }, // No.37 4:15:18〜4:16:21
+    'waf2025-MM90-R-W1-6': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 15384, end: 15453 }, // No.38 4:16:24〜4:17:33
+    'waf2025-MM90-R-W1-7': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 15462, end: 15600 }, // No.39 4:17:42〜4:20:00
+    'waf2025-MM90-R-W1-8': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 15609, end: 15786 }, // No.40 4:20:09〜4:23:06
+    'waf2025-MM90-R-W1-9': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 15795, end: 15948 }, // No.41 4:23:15〜4:25:48
+    'waf2025-MM90-R-W2-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 15948, end: 15959 }, // No.42 4:25:48〜4:25:59
+    'waf2025-MM90-R-W2-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 15963, end: 15974 }, // No.43 4:26:03〜4:26:14
+    'waf2025-MM90-R-W3-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 16548, end: 16689 }, // No.48 4:35:48〜4:38:09
+    'waf2025-MM90-R-W3-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 16701, end: 16781 }, // No.49 4:38:21〜4:39:41
+    'waf2025-MM90-R-W4-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 17365, end: 17661 }, // No.54 4:49:25〜4:54:21
+    'waf2025-MM90-R-WF': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 18501, end: 18562 }, // No.61 5:08:21〜5:09:22
+    'waf2025-MM90-R-L1-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 15984, end: 16209 }, // No.44 4:26:24〜4:30:09
+    'waf2025-MM90-R-L1-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 16221, end: 16311 }, // No.45 4:30:21〜4:31:51
+    'waf2025-MM90-R-L1-3': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 16323, end: 16423 }, // No.46 4:32:03〜4:33:43
+    'waf2025-MM90-R-L1-4': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 16434, end: 16536 }, // No.47 4:33:54〜4:35:36
+    'waf2025-MM90-R-L2-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 16788, end: 16982 }, // No.50 4:39:48〜4:43:02
+    'waf2025-MM90-R-L2-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 16992, end: 17041 }, // No.51 4:43:12〜4:44:01
+    'waf2025-MM90-R-L2-3': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 17052, end: 17173 }, // No.52 4:44:12〜4:46:13
+    'waf2025-MM90-R-L2-4': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 17184, end: 17357 }, // No.53 4:46:24〜4:49:17
+    'waf2025-MM90-R-L3-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 17670, end: 17801 }, // No.55 4:54:30〜4:56:41
+    'waf2025-MM90-R-L3-2': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 17811, end: 17903 }, // No.56 4:56:51〜4:58:23
+    'waf2025-MM90-R-L3-3': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 17910, end: 18022 }, // No.57 4:58:30〜5:00:22
+    'waf2025-MM90-R-L3-4': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 18033, end: 18155 }, // No.58 5:00:33〜5:02:35
+    'waf2025-MM90-R-L4-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 18168, end: 18370 }, // No.59 5:02:48〜5:06:10
+    'waf2025-MM90-R-L5-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 18378, end: 18490 }, // No.60 5:06:18〜5:08:10
+    'waf2025-MM90-R-L6-1': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 18570, end: 18876 }, // No.62 5:09:30〜5:14:36
+    'waf2025-MM90-R-LF': { url: 'https://www.youtube.com/watch?v=4Ls3EWSGfLM', start: 18888, end: 19051 }, // No.63 5:14:48〜5:17:31
+    'waf2025-MM90-R-F': { url: 'https://www.youtube.com/watch?v=POuaCNJsUcY', start: 7123, end: 7176 }, // No.64 1:58:43〜1:59:36
   },
 };
