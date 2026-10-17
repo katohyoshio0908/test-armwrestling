@@ -81,7 +81,11 @@ window.Store = (() => {
       }
     } else {
       // 決勝が未登録でも、敗者復活戦決勝があれば3位だけは確定する
-      const f = find('F2') || find('F');
+      // 決勝1回戦目を敗者復活戦側が勝った場合は2回戦目で決まるため、2回戦目が未登録なら1・2位は未確定
+      const wf = find('WF');
+      const f1 = find('F');
+      const f2 = find('F2');
+      const f = f2 || (f1 && (!wf || f1.winner === wf.winner) ? f1 : null);
       const lf = find('LF');
       const res = [];
       if (f) res.push({ athleteId: f.winner, place: 1 }, { athleteId: f.loser, place: 2 });

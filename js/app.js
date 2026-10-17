@@ -271,6 +271,7 @@
 
     return {
       html: `
+      <p class="disclaimer" role="note">このサイトは個人運営の試作サイトであり、日本腕相撲協会、AJAF、JAWA、JAF・AAF/WAFの公式サイトではありません。</p>
       <section class="hero">
         <div>
           <p class="eyebrow">ARMWRESTLING RESULTS DATABASE</p>

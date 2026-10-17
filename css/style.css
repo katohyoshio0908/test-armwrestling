@@ -428,3 +428,4 @@ input:focus, select:focus { outline: 2px solid color-mix(in srgb, var(--accent) 
 @media (max-width: 640px) { .filters .check { flex: 1 1 100%; } .filters .check input { flex: none; } }
 .partial-note { margin: 0 0 14px; padding: 10px 14px; border-radius: 10px; font-size: .88rem; font-weight: 700; color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, transparent); border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent); }
 .pod .name-sub { display: block; margin-top: -4px; font-size: .78rem; color: var(--muted); }
+.disclaimer { margin: 0 0 16px; padding: 10px 14px; border-radius: 10px; font-size: .88rem; font-weight: 700; line-height: 1.6; color: var(--text); background: var(--surface-2); border-left: 4px solid var(--accent); }
