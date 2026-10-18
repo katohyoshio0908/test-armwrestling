@@ -50,6 +50,8 @@
   const subName = (a) => (isForeign(a) ? a.name : '');
   // 選手一覧・選手ページの副表記（日本人はアルファベット、日本人以外はカタカナ）
   const altName = (a) => (isForeign(a) ? a.name : a.nameEn || '');
+  // 名前の2段表示（日本人以外: アルファベット / その下にカタカナ）
+  const nameLines = (a) => `<span class="nm"><strong>${esc(mainName(a))}</strong>${subName(a) ? `<span class="name-sub">${esc(subName(a))}</span>` : ''}</span>`;
   const athleteLink = (a) => `<a href="#/athletes/${a.id}">${esc(a.name)}</a>`;
   const chip = (text, cls = '') => `<span class="chip ${cls}">${esc(text)}</span>`;
   const armChip = (arm) => chip(ARM[arm], `arm-${arm}`);
@@ -271,7 +273,10 @@
 
     return {
       html: `
-      <p class="disclaimer" role="note">このサイトは個人運営の試作サイトであり、日本腕相撲協会、AJAF、JAWA、JAF・AAF/WAFの公式サイトではありません。</p>
+      <div class="disclaimer" role="note">
+        <p>このサイトは個人運営の試作サイトであり、日本腕相撲協会・AJAF・JAWA・JAF・AAF/WAFの公式サイトではありません。</p>
+        <p class="source">データ引用元：日本腕相撲協会・AJAF・JAWA・JAF・WAF（世界アームレスリング連盟）公式サイト</p>
+      </div>
       <section class="hero">
         <div>
           <p class="eyebrow">ARMWRESTLING RESULTS DATABASE</p>
@@ -320,7 +325,7 @@
           <div class="chips">${t.sample ? chip('サンプル', 'sample') : ''}${orgChip(t)}${chip(t.level)}${formats.map((f) => chip(f)).join('')}</div>
           <h3>${esc(t.name)}</h3>
           <p class="muted">${t.endDate ? `${fmtPeriod(t)} ・ ` : ''}${esc(t.venue)} ・ ${divs.length}部門 ・ ${n ? `${n}試合` : `出場${new Set(divs.flatMap((d) => d.entries)).size}名（結果未登録）`}</p>
-          <ul class="t-champs">${divs.filter((d) => d.standings.length).map((d) => `<li>${esc(S.cls(d.classId).name)} ${ARM[d.arm]}: <strong>${esc(S.athlete(d.standings[0].athleteId).name)}</strong></li>`).join('')}</ul>
+          <ul class="t-champs">${divs.filter((d) => d.standings.length).map((d) => `<li>${esc(S.cls(d.classId).name)} ${ARM[d.arm]}: <strong>${esc(mainName(S.athlete(d.standings[0].athleteId)))}</strong></li>`).join('')}</ul>
         </div>
       </a>`;
     };
@@ -359,6 +364,13 @@
     const div = S.division(`${id}-${c}-${arm}`);
     const tab = (cc, aa, label, on) => `<a class="${on ? 'on' : ''}" href="#/tournaments/${id}?c=${cc}&arm=${aa}">${esc(label)}</a>`;
     const armFor = (cc) => (divs.some((d) => d.classId === cc && d.arm === arm) ? arm : divs.find((d) => d.classId === cc).arm);
+    // この階級（左右両方）の動画付き試合
+    const classVideoMatches = () => divs
+      .filter((d) => d.classId === c)
+      .flatMap((d) => S.division(d.key).matches)
+      .filter((m) => m.video)
+      .sort((x, y) => (x.arm === y.arm ? 0 : x.arm === 'R' ? -1 : 1) || x.sortKey - y.sortKey || (x.slot || 0) - (y.slot || 0));
+    const videoCount = classVideoMatches().length;
 
     return {
       title: t.name,
@@ -369,7 +381,8 @@
         <p class="muted">${t.sample ? chip('サンプル', 'sample') + ' ' : ''}${t.organizer ? orgChip(t) + ' ' : ''}${fmtPeriod(t)} ・ ${esc(t.venue)} ・ ${esc(t.level)}</p>
       </header>
       <div class="tabs">${cids.map((cc) => tab(cc, armFor(cc), S.cls(cc).name, cc === c)).join('')}</div>
-      <div class="tabs sub">${arms.map((aa) => tab(c, aa, ARM[aa], aa === arm)).join('')}<span class="chip fmt">${esc(S.formatName(div.format))}</span></div>
+      <div class="tabs sub">${arms.map((aa) => tab(c, aa, ARM[aa], aa === arm)).join('')}<span class="chip fmt">${esc(S.formatName(div.format))}</span>
+        <button type="button" class="btn xs export-btn" id="exportVideos"${videoCount ? '' : ' disabled title="この階級には動画が登録されていません"'}>全動画データ出力（${videoCount}件）</button></div>
 
       <section class="card result-card">
         ${div.incomplete ? `<p class="partial-note">この部門の試合データは一部欠けています。${esc(div.note)}</p>` : ''}
@@ -384,6 +397,30 @@
       ${multiClassSection(id, arm)}
 
       <section><h2>試合一覧</h2>${matchList(div.matches)}</section>`,
+      mount(root) {
+        const btn = root.querySelector('#exportVideos');
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          const rows = [['YouTube URL', '開始時間', '終了時間', '大会名', '階級＆回戦', '対戦者A', '対戦者B']];
+          for (const m of classVideoMatches()) {
+            const yt = parseYouTube(m.video.url);
+            rows.push([
+              yt ? `https://www.youtube.com/watch?v=${yt}` : m.video.url,
+              fmtSec(m.video.start || 0),
+              m.video.end ? fmtSec(m.video.end) : '',
+              t.name,
+              `${S.cls(m.classId).name} ${ARM[m.arm]} ${m.label}`,
+              mainName(S.athlete(m.a)),
+              mainName(S.athlete(m.b)),
+            ]);
+          }
+          const safe = (s) => s.replace(/[\\/:*?"<>|]/g, '_').trim();
+          window.XlsxWriter.download(rows, `${safe(t.name)}_${safe(S.cls(c).name)}.xlsx`, {
+            sheetName: '動画データ',
+            widths: [46, 11, 11, 34, 36, 26, 26],
+          });
+        });
+      },
     };
   }
 
@@ -475,23 +512,22 @@
       </div>
 
       <section class="card">
-        <h2>大会成績・計量体重</h2>
+        <h2>大会成績</h2>
         <div class="tbl-scroll"><table class="tbl">
-          <thead><tr><th>日付</th><th>大会</th><th>計量体重</th><th>階級</th><th>右腕</th><th>左腕</th></tr></thead>
+          <thead><tr><th>日付</th><th>大会</th><th>階級</th><th>右腕</th><th>左腕</th></tr></thead>
           <tbody>${s.history.map((h, i) => {
-            // 同じ大会で複数階級に出場した場合は、日付・大会・計量体重をまとめて表示
+            // 同じ大会で複数階級に出場した場合は、日付・大会をまとめて表示
             const first = i === 0 || s.history[i - 1].tournament.id !== h.tournament.id;
             const rs = h.classCount > 1 ? ` rowspan="${h.classCount}"` : '';
             return `<tr class="${h.classCount > 1 ? 'multi-row' : ''}">
             ${first ? `<td${rs}>${fmtDate(h.tournament.date)}</td>
-            <td${rs}><a href="#/tournaments/${h.tournament.id}?c=${h.classId}">${esc(h.tournament.short)}</a>${h.classCount > 1 ? `<br>${chip(`${h.classCount}階級に出場`, 'multi')}` : ''}</td>
-            <td${rs}><strong>${kg(h.weight)}</strong></td>` : ''}
+            <td${rs}><a href="#/tournaments/${h.tournament.id}?c=${h.classId}">${esc(h.tournament.short)}</a>${h.classCount > 1 ? `<br>${chip(`${h.classCount}階級に出場`, 'multi')}` : ''}</td>` : ''}
             <td>${esc(S.cls(h.classId).name)}</td>
             ${placeCell(h, 'R')}${placeCell(h, 'L')}
           </tr>`;
           }).join('')}</tbody>
         </table></div>
-        <p class="muted small">順位は上位3名のみ表示しています。同じ大会で複数の階級に出場した場合は、階級ごとに1行ずつ表示します（計量は1回）。</p>
+        <p class="muted small">順位は上位3名のみ表示しています。同じ大会で複数の階級に出場した場合は、階級ごとに1行ずつ表示します。</p>
       </section>
 
       <div class="grid2">
@@ -502,7 +538,7 @@
           <h2>対戦相手別</h2>
           <ul class="opp">${s.opponents.map((o) => {
             const b = S.athlete(o.athleteId);
-            return `<li>${photo(b, 'sm')}<span class="grow">${athleteLink(b)}</span><span class="${o.w >= o.l ? 'pos' : 'neg'}">${o.w}-${o.l}</span><a class="btn xs" href="#/h2h?a=${id}&b=${b.id}">比較</a></li>`;
+            return `<li>${photo(b, 'sm')}<a class="grow name-link" href="#/athletes/${b.id}">${nameLines(b)}</a><span class="${o.w >= o.l ? 'pos' : 'neg'}">${o.w}-${o.l}</span><a class="btn xs" href="#/h2h?a=${id}&b=${b.id}">比較</a></li>`;
           }).join('')}</ul>
         </section>
       </div>
@@ -613,7 +649,7 @@
           </div>
           <div class="card">
             <h3>この2人の対戦成績</h3>
-            <div class="h2h-mini"><span>${esc(A.name)}</span><strong>${h.aWins} - ${h.bWins}</strong><span>${esc(B.name)}</span></div>
+            <div class="h2h-mini"><span>${nameLines(A)}</span><strong>${h.aWins} - ${h.bWins}</strong><span>${nameLines(B)}</span></div>
             <a class="btn block" href="#/h2h?a=${A.id}&b=${B.id}">詳しく比較する</a>
           </div>
         </aside>
@@ -639,51 +675,67 @@
   }
 
   function viewH2H(q) {
+    // 初期表示は未選択。選手Bは「選手Aと対戦したことのある選手」から選ぶ
+    const opponentsOf = (id) => (id ? S.athleteStats(id).opponents : []);
     const st = { a: q.get('a') || '', b: q.get('b') || '', arm: q.get('arm') || '' };
     if (!S.athlete(st.a)) st.a = '';
-    if (!S.athlete(st.b)) st.b = '';
+    if (!opponentsOf(st.a).some((o) => o.athleteId === st.b)) st.b = '';
     const LIMIT = 20;
+    const subInfo = (a) => [a.team, a.countryName].filter(Boolean).map(esc).join(' ・ ');
 
-    const pickedHtml = (side) => {
-      const a = S.athlete(st[side]);
-      if (!a) return `<div class="picked none">${side === 'a' ? '選手A' : '選手B'}を検索して選択してください</div>`;
-      return `<div class="picked">${photo(a, 'lg', a.name)}<span class="grow"><strong>${esc(a.name)}</strong>${nick(a)}<small class="muted">${[a.team, a.latestClassIds.map((c) => S.cls(c).name).join('・')].filter(Boolean).map(esc).join(' ・ ')}</small></span></div>`;
+    const pickedHtml = (id, placeholder) => {
+      const a = S.athlete(id);
+      if (!a) return `<div class="picked none">${placeholder}</div>`;
+      return `<div class="picked">${photo(a, 'lg', a.name)}<span class="grow">${nameLines(a)}${nick(a)}<small class="muted">${subInfo(a)}</small></span></div>`;
     };
+    const pickedA = () => pickedHtml(st.a, '選手Aを検索して選択してください');
+    const pickedB = () => pickedHtml(st.b, st.a ? '下のリストから対戦相手を選択してください' : '先に選手Aを選択してください');
     const resultsHtml = (kw) => {
       if (!kw.trim()) return '<p class="muted small">名前・あだ名・チーム名を入力して「検索」を押してください。</p>';
       const hits = S.searchAthletes(kw);
       if (!hits.length) return '<p class="muted small">該当する選手が見つかりません。</p>';
-      return `<ul class="presults">${hits.slice(0, LIMIT).map((a) => `<li><button type="button" class="pick" data-id="${a.id}">${photo(a, 'sm')}<span class="grow"><strong>${esc(a.name)}</strong>${nick(a)}<small class="muted">${esc(a.team)}</small></span><span class="chip">選択</span></button></li>`).join('')}</ul>
+      return `<ul class="presults">${hits.slice(0, LIMIT).map((a) => `<li><button type="button" class="pick" data-id="${a.id}">${photo(a, 'sm')}<span class="grow">${nameLines(a)}${nick(a)}<small class="muted">${subInfo(a)}</small></span><span class="chip">選択</span></button></li>`).join('')}</ul>
         ${hits.length > LIMIT ? `<p class="muted small">他 ${hits.length - LIMIT} 件。条件を絞って検索してください。</p>` : ''}`;
     };
-    const picker = (side) => `<div class="card picker" data-side="${side}">
-      <div class="picker-label">${side === 'a' ? '選手A' : '選手B'}</div>
-      <div data-picked>${pickedHtml(side)}</div>
-      <form class="psearch"><input type="search" name="kw" placeholder="名前・あだ名・チームで検索" aria-label="${side === 'a' ? '選手A' : '選手B'}を検索"><button class="btn primary" type="submit">検索</button></form>
-      <div data-results></div>
-    </div>`;
+    // 選手B: 写真付きのドロップダウン（標準の select には画像を入れられないため独自実装）
+    const ddButton = () => {
+      const b = S.athlete(st.b);
+      const inner = b
+        ? `${photo(b, 'sm')}<span class="grow">${nameLines(b)}</span>`
+        : `<span class="grow muted">${st.a ? '対戦相手を選択' : '選手Aを先に選択'}</span>`;
+      return `<button type="button" class="dd-btn" aria-haspopup="listbox" aria-expanded="false"${st.a ? '' : ' disabled'}>${inner}<span class="dd-caret" aria-hidden="true">▾</span></button>`;
+    };
+    const ddItems = () => opponentsOf(st.a).map((o) => {
+      const b = S.athlete(o.athleteId);
+      const on = b.id === st.b;
+      return `<li><button type="button" role="option" class="dd-opt${on ? ' on' : ''}" data-id="${b.id}" aria-selected="${on}">${photo(b, 'sm')}<span class="grow">${nameLines(b)}</span><span class="chip">${o.w + o.l}試合</span></button></li>`;
+    }).join('');
+    const ddHtml = () => `${ddButton()}<ul class="dd-list" role="listbox" aria-label="選手Bを選択" hidden>${ddItems()}</ul>`;
 
     const result = () => {
-      if (!st.a || !st.b) return empty('2人の選手を選ぶと対戦成績を表示します');
-      if (st.a === st.b) return empty('異なる2人の選手を選んでください');
+      if (!st.a) return empty('選手Aを検索して選択してください');
+      if (!st.b) return empty('選手Bをリストから選択すると、2人の対戦成績を表示します');
       const A = S.athlete(st.a), B = S.athlete(st.b);
       const h = S.headToHead(st.a, st.b, st.arm);
-      const sa = S.athleteStats(st.a, st.arm), sb = S.athleteStats(st.b, st.arm);
       const total = h.aWins + h.bWins;
-      const cmp = (label, va, vb) => `<tr><td class="${va > vb ? 'pos' : ''}">${va}</td><th>${label}</th><td class="${vb > va ? 'pos' : ''}">${vb}</td></tr>`;
       const armLabel = st.arm ? ARM[st.arm] : '両腕';
+      // 比較表は2人の対戦（両腕すべて）から集計
+      const all = S.headToHead(st.a, st.b).matches;
+      const wins = (id, arm) => all.filter((m) => m.winner === id && (!arm || m.arm === arm)).length;
+      const aw = wins(st.a), bw = wins(st.b);
+      const cmp = (label, va, vb, hi = true) => `<tr><td class="${hi && va > vb ? 'pos' : ''}">${va}</td><th>${label}</th><td class="${hi && vb > va ? 'pos' : ''}">${vb}</td></tr>`;
       return `
         <div class="card h2h-head">
-          <a href="#/athletes/${A.id}" class="h2h-side">${photo(A, 'xl', A.name)}<strong>${esc(A.name)}</strong>${nick(A)}<small class="muted">${esc(A.team)}</small></a>
+          <a href="#/athletes/${A.id}" class="h2h-side">${photo(A, 'xl', A.name)}${nameLines(A)}${nick(A)}<small class="muted">${subInfo(A)}</small></a>
           <div class="h2h-score"><small class="muted">直接対決（${armLabel}）</small><strong>${h.aWins}<span>-</span>${h.bWins}</strong><small class="muted">${total}試合</small>
             ${total ? `<span class="bar dual"><span style="width:${pct(h.aWins, total)}%"></span></span>` : ''}</div>
-          <a href="#/athletes/${B.id}" class="h2h-side">${photo(B, 'xl', B.name)}<strong>${esc(B.name)}</strong>${nick(B)}<small class="muted">${esc(B.team)}</small></a>
+          <a href="#/athletes/${B.id}" class="h2h-side">${photo(B, 'xl', B.name)}${nameLines(B)}${nick(B)}<small class="muted">${subInfo(B)}</small></a>
         </div>
-        <div class="card"><h3 class="center">通算成績の比較（${armLabel}）</h3><table class="cmp"><tbody>
-          ${cmp('試合数', sa.total, sb.total)}
-          ${cmp('勝利数', sa.wins, sb.wins)}
-          ${cmp('勝率(%)', pct(sa.wins, sa.total), pct(sb.wins, sb.total))}
-          ${cmp('ピン勝ち数', sa.pins, sb.pins)}
+        <div class="card"><h3 class="center">2人の対戦成績の比較</h3><table class="cmp"><tbody>
+          ${cmp('試合数', all.length, all.length, false)}
+          ${cmp('左腕の勝利数', wins(st.a, 'L'), wins(st.b, 'L'))}
+          ${cmp('右腕の勝利数', wins(st.a, 'R'), wins(st.b, 'R'))}
+          ${cmp('勝率（全体・%）', pct(aw, all.length), pct(bw, all.length))}
         </tbody></table></div>
         <section><h2>直接対決の試合</h2>${total ? matchList(h.matches, st.a) : empty(`この2人の${armLabel}での対戦記録はありません`)}</section>`;
     };
@@ -700,29 +752,77 @@
       title: '対戦比較',
       html: `
       <h1 class="page-title">対戦比較（Head to Head）</h1>
-      <div class="pickers">${picker('a')}<span class="vs big">VS</span>${picker('b')}</div>
-      <div class="sec-head"><span class="muted small">対象の腕</span>${segmented('h2harm', [['', '両腕'], ['R', '右腕'], ['L', '左腕']], st.arm)}</div>
+      <div class="pickers">
+        <div class="card picker">
+          <div class="picker-label">選手A</div>
+          <div id="pickA">${pickedA()}</div>
+          <form class="psearch" id="searchA"><input type="search" name="kw" placeholder="名前・あだ名・チームで検索" aria-label="選手Aを検索"><button class="btn primary" type="submit">検索</button></form>
+          <div id="resultsA"></div>
+        </div>
+        <span class="vs big">VS</span>
+        <div class="card picker">
+          <div class="picker-label">選手B（選手Aの対戦相手）</div>
+          <div id="pickB">${pickedB()}</div>
+          <div class="dd" id="ddB">${ddHtml()}</div>
+        </div>
+      </div>
+      <div class="sec-head"><span class="muted small">対象の腕（直接対決のスコアと試合一覧）</span>${segmented('h2harm', [['', '両腕'], ['R', '右腕'], ['L', '左腕']], st.arm)}</div>
       <div id="h2hout">${result()}</div>`,
       mount(root) {
         const out = root.querySelector('#h2hout');
-        root.querySelectorAll('.picker').forEach((p) => {
-          const side = p.dataset.side;
-          const res = p.querySelector('[data-results]');
-          p.querySelector('.psearch').addEventListener('submit', (e) => {
-            e.preventDefault();
-            res.innerHTML = resultsHtml(e.target.kw.value);
-          });
-          res.addEventListener('click', (e) => {
-            const b = e.target.closest('.pick');
-            if (!b) return;
-            st[side] = b.dataset.id;
-            p.querySelector('[data-picked]').innerHTML = pickedHtml(side);
-            res.innerHTML = '';
-            p.querySelector('.psearch').reset();
-            syncUrl();
-            out.innerHTML = result();
-          });
+        const res = root.querySelector('#resultsA');
+        const dd = root.querySelector('#ddB');
+        const refreshB = () => {
+          dd.innerHTML = ddHtml();
+          root.querySelector('#pickB').innerHTML = pickedB();
+        };
+        const setOpen = (open) => {
+          const btn = dd.querySelector('.dd-btn'), list = dd.querySelector('.dd-list');
+          if (!btn || btn.disabled) return;
+          list.hidden = !open;
+          btn.setAttribute('aria-expanded', open);
+          if (open) (list.querySelector('.dd-opt.on') || list.querySelector('.dd-opt'))?.focus();
+        };
+        root.querySelector('#searchA').addEventListener('submit', (e) => {
+          e.preventDefault();
+          res.innerHTML = resultsHtml(e.target.kw.value);
         });
+        res.addEventListener('click', (e) => {
+          const b = e.target.closest('.pick');
+          if (!b) return;
+          st.a = b.dataset.id;
+          st.b = '';
+          root.querySelector('#pickA').innerHTML = pickedA();
+          res.innerHTML = '';
+          root.querySelector('#searchA').reset();
+          refreshB();
+          syncUrl();
+          out.innerHTML = result();
+        });
+        dd.addEventListener('click', (e) => {
+          if (e.target.closest('.dd-btn')) { setOpen(dd.querySelector('.dd-list').hidden); return; }
+          const o = e.target.closest('.dd-opt');
+          if (!o) return;
+          st.b = o.dataset.id;
+          refreshB();
+          syncUrl();
+          out.innerHTML = result();
+          dd.querySelector('.dd-btn').focus();
+        });
+        dd.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') { setOpen(false); dd.querySelector('.dd-btn').focus(); }
+          if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            const opts = [...dd.querySelectorAll('.dd-opt')];
+            if (!opts.length) return;
+            e.preventDefault();
+            if (dd.querySelector('.dd-list').hidden) { setOpen(true); return; }
+            const i = opts.indexOf(document.activeElement);
+            const n = e.key === 'ArrowDown' ? Math.min(i + 1, opts.length - 1) : Math.max(i - 1, 0);
+            opts[n].focus();
+          }
+        });
+        // 一覧の外をクリックしたら閉じる
+        root.addEventListener('click', (e) => { if (!dd.contains(e.target)) setOpen(false); });
         bindSegmented(root, 'h2harm', (arm) => { st.arm = arm; syncUrl(); out.innerHTML = result(); });
       },
     };
