@@ -67,6 +67,8 @@ window.AW_DATA = {
     { id: 'UKR', name: 'ウクライナ' },
     { id: 'USA', name: 'アメリカ' },
     { id: 'UZB', name: 'ウズベキスタン' },
+    { id: 'KGZ', name: 'キルギス' },
+    { id: 'ARM', name: 'アルメニア' },
   ],
 
   // 主催団体（大会の organizer に指定。どれにも当てはまらない場合は 'その他'）
@@ -172,7 +174,7 @@ window.AW_DATA = {
     { id: 'w51', name: 'ジュリアン ポワベルオー', nameEn: 'Julien Poisbelaud', nationality: 'FRA', team: '', photo: 'img/athletes/noimage.svg' },
     { id: 'w52', name: 'アルベルト ムヌエラ', nameEn: 'Alberto Munuera', nationality: 'ESP', team: '', photo: 'img/athletes/noimage.svg' },
     { id: 'w53', name: 'イェナル クルチ', nameEn: 'Yenal Kilic', nationality: 'TUR', team: '', photo: 'img/athletes/noimage.svg' },
-    { id: 'w54', name: 'イジー ポフネク', nameEn: 'Jiri Pohunek', nationality: 'CZE', team: '', photo: 'img/athletes/noimage.svg' },
+    { id: 'w54', name: 'イジー ポフネク', nameEn: 'Jiri Pohunek', nationality: 'CZE', team: '', photo: 'img/athletes/w54.jpg' },
     { id: 'w55', name: 'ミカエル ショーディン', nameEn: 'Mikael Sjodin', nationality: 'NOR', team: '', photo: 'img/athletes/noimage.svg' },
     { id: 'w56', name: 'ヤン ニーモ', nameEn: 'Jan Nymo', nationality: 'NOR', team: '', photo: 'img/athletes/noimage.svg' },
     { id: 'w57', name: 'ダヴィト イヴァニゼ', nameEn: 'Davit Ivanidze', nationality: 'GEO', team: '', photo: 'img/athletes/noimage.svg' },
@@ -182,10 +184,97 @@ window.AW_DATA = {
     { id: 'w61', name: '植松 政憲', nameEn: 'Uematsu Masanori', nationality: 'JPN', team: 'SAFARI', photo: 'img/athletes/noimage.svg' },
     { id: 'w62', name: 'ビジナ マリアシュヴィリ', nameEn: 'Bidzina Mariashvili', nationality: 'GEO', team: '', photo: 'img/athletes/noimage.svg' },
     { id: 'w63', name: 'ルイス バレラ', nameEn: 'Louis Barrera', nationality: 'USA', team: '', photo: 'img/athletes/noimage.svg' },
+
+    // ---- 本番データ：2024 WAF世界選手権 出場選手（既存選手と英字氏名・国が同じ選手は追加せず） ----
+    { id: 'w64', name: 'イムレ ヴァーイ', nameEn: 'Imre Valyi', nationality: 'HUN', team: '', photo: 'img/athletes/w64.jpg' },
+    { id: 'w65', name: 'アザマト オトルバエフ', nameEn: 'Azamat Otorbaev', nationality: 'KGZ', team: '', photo: 'img/athletes/w65.jpg' },
+    { id: 'w66', name: 'アルマン ピロヤン', nameEn: 'Arman Piroyan', nationality: 'ARM', team: '', photo: 'img/athletes/w66.jpg' },
   ],
 
   tournaments: [
     // ---- 本番データ ----
+    {
+      // 階級は -80kg と判断
+      id: 'waf2024', organizer: 'その他', name: '2024 WAFアームレスリング 世界選手権', short: '2024 WAF世界選手権',
+      date: '2024-08-15', endDate: '2024-08-25', venue: 'モルドバ・キシナウ', level: '世界大会',
+      weighIns: {},
+      divisions: [
+        {
+          // 出典: 2024_WAF_マスターズ-80kg左右.xlsx「入力データ」シート
+          classId: 'MM80', arm: 'L', format: 'double',
+          entries: ['w22', 'w21', 'w23', 'w24', 'w64', 'w65', 'w35', 'w54', 'w29', 'w30'],
+          matches: [
+            // 本戦1回戦
+            { id: 'waf2024-MM80-L-W1-1', round: 'W', no: 1, slot: 1, a: 'w24', b: 'w30', winner: 'w24', method: '要確認' },
+            { id: 'waf2024-MM80-L-W1-2', round: 'W', no: 1, slot: 2, a: 'w23', b: 'w35', winner: 'w23', method: '要確認' },
+            { id: 'waf2024-MM80-L-W1-3', round: 'W', no: 1, slot: 3, a: 'w29', b: 'w64', winner: 'w64', method: '要確認' },
+            { id: 'waf2024-MM80-L-W1-4', round: 'W', no: 1, slot: 4, a: 'w21', b: 'w65', winner: 'w21', method: '要確認' },
+            { id: 'waf2024-MM80-L-W1-5', round: 'W', no: 1, slot: 5, a: 'w54', b: 'w22', winner: 'w22', method: '要確認' },
+            // 本戦2回戦
+            { id: 'waf2024-MM80-L-W2-1', round: 'W', no: 2, slot: 1, a: 'w24', b: 'w23', winner: 'w23', method: '要確認', note: '長い映像区間のため、協議・再セットを含む可能性あり' },
+            { id: 'waf2024-MM80-L-W2-2', round: 'W', no: 2, slot: 2, a: 'w64', b: 'w21', winner: 'w21', method: '要確認' },
+            // 本戦3回戦
+            { id: 'waf2024-MM80-L-W3-1', round: 'W', no: 3, slot: 1, a: 'w22', b: 'w23', winner: 'w22', method: '要確認', note: '長い映像区間のため、協議・再セットを含む可能性あり' },
+            // 本戦決勝
+            { id: 'waf2024-MM80-L-WF', round: 'WF', no: 0, slot: 1, a: 'w21', b: 'w22', winner: 'w22', method: '要確認', note: 'part01 00:50:43に黄色ストラップが両選手の手に巻かれていることを確認' },
+            // 敗者復活戦1回戦
+            { id: 'waf2024-MM80-L-L1-1', round: 'L', no: 1, slot: 1, a: 'w30', b: 'w35', winner: 'w35', method: '要確認' },
+            { id: 'waf2024-MM80-L-L1-2', round: 'L', no: 1, slot: 2, a: 'w29', b: 'w65', winner: 'w65', method: '要確認' },
+            // 敗者復活戦2回戦
+            { id: 'waf2024-MM80-L-L2-1', round: 'L', no: 2, slot: 1, a: 'w54', b: 'w24', winner: 'w24', method: '要確認' },
+            { id: 'waf2024-MM80-L-L2-2', round: 'L', no: 2, slot: 2, a: 'w64', b: 'w35', winner: 'w64', method: '要確認' },
+            // 敗者復活戦3回戦
+            { id: 'waf2024-MM80-L-L3-1', round: 'L', no: 3, slot: 1, a: 'w65', b: 'w23', winner: 'w23', method: '要確認' },
+            { id: 'waf2024-MM80-L-L3-2', round: 'L', no: 3, slot: 2, a: 'w24', b: 'w64', winner: 'w24', method: '要確認' },
+            // 敗者復活戦4回戦
+            { id: 'waf2024-MM80-L-L4-1', round: 'L', no: 4, slot: 1, a: 'w23', b: 'w24', winner: 'w23', method: '要確認', note: '長い映像区間のため、協議・再セットを含む可能性あり' },
+            // 敗者復活戦決勝
+            { id: 'waf2024-MM80-L-LF', round: 'LF', no: 0, slot: 1, a: 'w21', b: 'w23', winner: 'w21', method: '要確認' },
+            // 決勝
+            { id: 'waf2024-MM80-L-F', round: 'F', no: 0, slot: 1, a: 'w22', b: 'w21', winner: 'w22', method: 'ピン勝ち', note: 'ストラップ' },
+          ],
+        },
+        {
+          // 出典: 2024_WAF_マスターズ-80kg左右.xlsx「入力データ」シート
+          classId: 'MM80', arm: 'R', format: 'double',
+          entries: ['w21', 'w23', 'w40', 'w30', 'w41', 'w24', 'w29', 'w22', 'w64', 'w65', 'w54', 'w66'],
+          matches: [
+            // 本戦1回戦
+            { id: 'waf2024-MM80-R-W1-1', round: 'W', no: 1, slot: 1, a: 'w22', b: 'w30', winner: 'w30', method: '要確認' },
+            { id: 'waf2024-MM80-R-W1-2', round: 'W', no: 1, slot: 2, a: 'w66', b: 'w40', winner: 'w40', method: '要確認' },
+            { id: 'waf2024-MM80-R-W1-3', round: 'W', no: 1, slot: 3, a: 'w64', b: 'w54', winner: 'w64', method: '要確認' },
+            { id: 'waf2024-MM80-R-W1-4', round: 'W', no: 1, slot: 4, a: 'w23', b: 'w41', winner: 'w23', method: '要確認' },
+            { id: 'waf2024-MM80-R-W1-5', round: 'W', no: 1, slot: 5, a: 'w65', b: 'w21', winner: 'w21', method: '要確認' },
+            { id: 'waf2024-MM80-R-W1-6', round: 'W', no: 1, slot: 6, a: 'w29', b: 'w24', winner: 'w24', method: '要確認' },
+            // 本戦2回戦
+            { id: 'waf2024-MM80-R-W2-1', round: 'W', no: 2, slot: 1, a: 'w30', b: 'w40', winner: 'w40', method: '要確認' },
+            { id: 'waf2024-MM80-R-W2-2', round: 'W', no: 2, slot: 2, a: 'w64', b: 'w23', winner: 'w23', method: '要確認' },
+            { id: 'waf2024-MM80-R-W2-3', round: 'W', no: 2, slot: 3, a: 'w21', b: 'w24', winner: 'w21', method: '要確認' },
+            // 本戦3回戦
+            { id: 'waf2024-MM80-R-W3-1', round: 'W', no: 3, slot: 1, a: 'w40', b: 'w23', winner: 'w23', method: '要確認', note: 'part03からpart04へ連続する対戦。決着はpart04で表示' },
+            // 本戦決勝
+            { id: 'waf2024-MM80-R-WF', round: 'WF', no: 0, slot: 1, a: 'w21', b: 'w23', winner: 'w21', method: '要確認' },
+            // 敗者復活戦1回戦
+            { id: 'waf2024-MM80-R-L1-1', round: 'L', no: 1, slot: 1, a: 'w22', b: 'w66', winner: 'w22', method: '要確認' },
+            { id: 'waf2024-MM80-R-L1-2', round: 'L', no: 1, slot: 2, a: 'w54', b: 'w41', winner: 'w41', method: '要確認' },
+            { id: 'waf2024-MM80-R-L1-3', round: 'L', no: 1, slot: 3, a: 'w65', b: 'w29', winner: 'w29', method: '要確認' },
+            // 敗者復活戦2回戦
+            { id: 'waf2024-MM80-R-L2-1', round: 'L', no: 2, slot: 1, a: 'w30', b: 'w64', winner: 'w30', method: '要確認' },
+            { id: 'waf2024-MM80-R-L2-2', round: 'L', no: 2, slot: 2, a: 'w24', b: 'w22', winner: 'w24', method: '要確認' },
+            { id: 'waf2024-MM80-R-L2-3', round: 'L', no: 2, slot: 3, a: 'w41', b: 'w29', winner: 'w41', method: '要確認' },
+            // 敗者復活戦3回戦
+            { id: 'waf2024-MM80-R-L3-1', round: 'L', no: 3, slot: 1, a: 'w40', b: 'w24', winner: 'w40', method: '要確認' },
+            { id: 'waf2024-MM80-R-L3-2', round: 'L', no: 3, slot: 2, a: 'w30', b: 'w41', winner: 'w30', method: '要確認' },
+            // 敗者復活戦4回戦
+            { id: 'waf2024-MM80-R-L4-1', round: 'L', no: 4, slot: 1, a: 'w40', b: 'w30', winner: 'w40', method: '要確認' },
+            // 敗者復活戦決勝
+            { id: 'waf2024-MM80-R-LF', round: 'LF', no: 0, slot: 1, a: 'w23', b: 'w40', winner: 'w23', method: '要確認', note: '準決勝（SEMIFINAL）／PROTEST表示もあり。確定経緯の確認が必要' },
+            // 決勝
+            { id: 'waf2024-MM80-R-F', round: 'F', no: 0, slot: 1, a: 'w21', b: 'w23', winner: 'w21', method: '2ファール勝ち', note: 'レフリーズグリップ、ストラップ' },
+          ],
+        },
+      ],
+    },
     {
       // 出場選手のみ登録（試合結果・順位は未入力のため matches は空）
       id: 'waf2025', organizer: 'その他', name: '2025 WAFアームレスリング 世界選手権', short: '2025 WAF世界選手権',
@@ -577,6 +666,47 @@ window.AW_DATA = {
   ],
 
   videos: {
+    // 2024 WAF世界選手権 マスターズ男子 -80kg 左腕・右腕（「入力データ」シートの時刻を秒に換算）
+    'waf2024-MM80-L-W1-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 154, end: 445 }, // No.1 0:02:34〜0:07:25
+    'waf2024-MM80-L-W1-2': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 447, end: 605 }, // No.2 0:07:27〜0:10:05
+    'waf2024-MM80-L-W1-3': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 607, end: 714 }, // No.3 0:10:07〜0:11:54
+    'waf2024-MM80-L-W1-4': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 719, end: 796 }, // No.4 0:11:59〜0:13:16
+    'waf2024-MM80-L-W1-5': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 798, end: 966 }, // No.5 0:13:18〜0:16:06
+    'waf2024-MM80-L-W2-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 971, end: 1323 }, // No.6 0:16:11〜0:22:03
+    'waf2024-MM80-L-W2-2': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 1328, end: 1384 }, // No.7 0:22:08〜0:23:04
+    'waf2024-MM80-L-W3-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 1736, end: 2210 }, // No.10 0:28:56〜0:36:50
+    'waf2024-MM80-L-WF': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 2910, end: 3068 }, // No.15 0:48:30〜0:51:08
+    'waf2024-MM80-L-L1-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 1389, end: 1598 }, // No.8 0:23:09〜0:26:38
+    'waf2024-MM80-L-L1-2': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 1603, end: 1731 }, // No.9 0:26:43〜0:28:51
+    'waf2024-MM80-L-L2-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 2212, end: 2441 }, // No.11 0:36:52〜0:40:41
+    'waf2024-MM80-L-L2-2': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 2446, end: 2645 }, // No.12 0:40:46〜0:44:05
+    'waf2024-MM80-L-L3-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 2647, end: 2754 }, // No.13 0:44:07〜0:45:54
+    'waf2024-MM80-L-L3-2': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 2760, end: 2907 }, // No.14 0:46:00〜0:48:27
+    'waf2024-MM80-L-L4-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 3073, end: 3577 }, // No.16 0:51:13〜0:59:37
+    'waf2024-MM80-L-LF': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 3579, end: 3914 }, // No.17 0:59:39〜1:05:14
+    'waf2024-MM80-L-F': { url: 'https://www.youtube.com/watch?v=HVivR0fnPgw', start: 1964, end: 2233 }, // No.18 0:32:44〜0:37:13
+    'waf2024-MM80-R-W1-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 8152, end: 8381 }, // No.19 2:15:52〜2:19:41
+    'waf2024-MM80-R-W1-2': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 8386, end: 8575 }, // No.20 2:19:46〜2:22:55
+    'waf2024-MM80-R-W1-3': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 8580, end: 8860 }, // No.21 2:23:00〜2:27:40
+    'waf2024-MM80-R-W1-4': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 8862, end: 9122 }, // No.22 2:27:42〜2:32:02
+    'waf2024-MM80-R-W1-5': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 9124, end: 9242 }, // No.23 2:32:04〜2:34:02
+    'waf2024-MM80-R-W1-6': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 9247, end: 9385 }, // No.24 2:34:07〜2:36:25
+    'waf2024-MM80-R-W2-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 9390, end: 9548 }, // No.25 2:36:30〜2:39:08
+    'waf2024-MM80-R-W2-2': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 9553, end: 9711 }, // No.26 2:39:13〜2:41:51
+    'waf2024-MM80-R-W2-3': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 9716, end: 9884 }, // No.27 2:41:56〜2:44:44
+    'waf2024-MM80-R-W3-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 10486, end: 10838 }, // No.31 2:54:46〜3:00:38
+    'waf2024-MM80-R-WF': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 11533, end: 11773 }, // No.37 3:12:13〜3:16:13
+    'waf2024-MM80-R-L1-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 9887, end: 10239 }, // No.28 2:44:47〜2:50:39
+    'waf2024-MM80-R-L1-2': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 10241, end: 10317 }, // No.29 2:50:41〜2:51:57
+    'waf2024-MM80-R-L1-3': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 10322, end: 10481 }, // No.30 2:52:02〜2:54:41
+    'waf2024-MM80-R-L2-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 10843, end: 10930 }, // No.32 3:00:43〜3:02:10
+    'waf2024-MM80-R-L2-2': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 10932, end: 11223 }, // No.33 3:02:12〜3:07:03
+    'waf2024-MM80-R-L2-3': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 11225, end: 11302 }, // No.34 3:07:05〜3:08:22
+    'waf2024-MM80-R-L3-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 11304, end: 11421 }, // No.35 3:08:24〜3:10:21
+    'waf2024-MM80-R-L3-2': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 11424, end: 11531 }, // No.36 3:10:24〜3:12:11
+    'waf2024-MM80-R-L4-1': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 11775, end: 11944 }, // No.38 3:16:15〜3:19:04
+    'waf2024-MM80-R-LF': { url: 'https://www.youtube.com/watch?v=_WjaUjnHn2s', start: 11946, end: 12403 }, // No.39 3:19:06〜3:26:43
+    'waf2024-MM80-R-F': { url: 'https://www.youtube.com/watch?v=HVivR0fnPgw', start: 9908, end: 10276 }, // No.40 2:45:08〜2:51:16
     // 第32回ジャパンオープン シニア -80kg（start〜end 秒の範囲だけ再生）
     // 左腕
     'jo32-SM80-L-W1-1': { url: 'https://youtu.be/erxZ_ZOBl-U', start: 5528, end: 5623 }, // 1:32:08〜1:33:43
