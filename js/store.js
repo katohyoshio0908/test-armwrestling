@@ -41,6 +41,7 @@ window.Store = (() => {
         return {
           ...m,
           id: m.id || `${key}-${i + 1}`,
+          detail: m.detail || (D.details || {})[m.id || `${key}-${i + 1}`],
           tournamentId: t.id, date: t.date, classId: d.classId, arm: d.arm, format: d.format, divKey: key,
           loser: m.winner === m.a ? m.b : m.a,
           roundName: r.name,
@@ -183,9 +184,34 @@ window.Store = (() => {
     return d ? RULES.leagueTable(d.entries, d.matches) : [];
   }
 
+  // 試合詳細: fouls / warnings は [a, b] または { 選手ID: 数 }
+  const filled = (v) => v != null && v !== '';
+  const yes = (v) => filled(v) && v !== 'なし' && v !== false && v !== 0;
+  const detailPair = (m, p) => (!p ? [] : Array.isArray(p) ? p : [p[m.a], p[m.b]]);
+  function hasDetail(m) {
+    const d = m.detail || {};
+    return [...detailPair(m, d.fouls), ...detailPair(m, d.warnings), d.strapRequest, d.strap, d.refereeGrip].some(filled);
+  }
+  // 選手ごとの試合詳細の集計（分母は詳細記載のある試合数）
+  function detailStats(id, ms) {
+    const r = { total: ms.length, recorded: 0, fouls: 0, warnings: 0, strapRequests: 0, straps: 0, refereeGrips: 0 };
+    for (const m of ms.filter(hasDetail)) {
+      const d = m.detail, side = m.a === id ? 0 : 1;
+      r.recorded++;
+      r.fouls += Number(detailPair(m, d.fouls)[side]) || 0;
+      r.warnings += Number(detailPair(m, d.warnings)[side]) || 0;
+      // ストラップ申請は 'あり' / 'なし' のほか、申請した選手ID や [a, b] / { 選手ID: true } でも指定可
+      const sr = d.strapRequest;
+      if (typeof sr === 'object' && sr ? yes(detailPair(m, sr)[side]) : sr === m.a || sr === m.b ? sr === id : yes(sr)) r.strapRequests++;
+      if (yes(d.strap)) r.straps++;
+      if (yes(d.refereeGrip)) r.refereeGrips++;
+    }
+    return r;
+  }
+
   function athleteStats(id, arm) {
     const ms = matches({ athleteId: id, arm });
-    const s = { wins: 0, losses: 0, pins: 0, byArm: { R: { w: 0, l: 0 }, L: { w: 0, l: 0 } }, streak: null };
+    const s = { wins: 0, losses: 0, pins: 0, byArm: { R: { w: 0, l: 0 }, L: { w: 0, l: 0 } } };
     const opp = new Map();
     for (const m of ms) {
       const won = m.winner === id;
@@ -195,18 +221,13 @@ window.Store = (() => {
       else { s.losses++; s.byArm[m.arm].l++; rec.l++; }
       opp.set(o, rec);
     }
-    if (ms.length) {
-      const first = ms[0].winner === id;
-      let n = 0;
-      for (const m of ms) { if ((m.winner === id) === first) n++; else break; }
-      s.streak = { win: first, count: n };
-    }
     s.total = s.wins + s.losses;
     const mine = placements.filter((p) => p.athleteId === id && (!arm || p.arm === arm));
     s.titles = mine.filter((p) => p.place === 1).length;
     s.medals = mine.length;
     s.opponents = [...opp.values()].sort((x, y) => (y.w + y.l) - (x.w + x.l));
     s.matches = ms;
+    s.detail = detailStats(id, ms);
     // 大会ごとの出場記録（計量体重・階級・腕別の順位）
     // 大会 × 階級 ごとに1行（同じ大会で複数階級に出場した場合は複数行）
     s.history = tournamentList.flatMap((t) => {
@@ -276,7 +297,7 @@ window.Store = (() => {
     divisionsOf, division, leagueTable, multiClassEntrants,
     matches,
     match: (id) => (matchMap.has(id) ? withVideo(matchMap.get(id)) : null),
-    athleteStats, headToHead, searchAthletes, weightOf,
+    athleteStats, headToHead, searchAthletes, weightOf, hasDetail, detailPair, detailStats,
     setVideo, removeVideo, exportVideos,
   };
 })();

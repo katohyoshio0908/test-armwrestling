@@ -320,7 +320,8 @@ input:focus, select:focus { outline: 2px solid color-mix(in srgb, var(--accent) 
 .profile { display: flex; gap: 20px; align-items: flex-start; }
 .profile h1 { font-size: 1.6rem; }
 .profile p { margin: 10px 0 0; }
-.stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 16px 0; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+.stats-6 { grid-template-columns: repeat(6, 1fr); }
 .stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
 .stat span { display: block; font-size: .8rem; color: var(--muted); }
 .stat strong { font-size: 1.35rem; font-weight: 900; }
@@ -446,4 +447,4 @@ input:focus, select:focus { outline: 2px solid color-mix(in srgb, var(--accent) 
 .dd-opt { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; font: inherit; color: var(--text); background: transparent; border: 0; border-radius: 8px; padding: 8px; cursor: pointer; }
 .dd-opt:hover, .dd-opt:focus { background: var(--surface-2); outline: none; }
 .dd-opt.on { background: color-mix(in srgb, var(--accent) 10%, transparent); }
-.export-btn { align-self: center; margin-left: 8px; }
+.export-foot { display: flex; justify-content: flex-end; margin-top: 24px; }

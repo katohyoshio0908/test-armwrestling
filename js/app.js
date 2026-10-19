@@ -99,6 +99,23 @@
     return `<div class="video placeholder"><div><div class="ph-icon">↗</div><a href="${esc(v.url)}" target="_blank" rel="noopener">外部サイトで動画を見る</a></div></div>`;
   }
 
+  // 部門の試合に紐づく動画を動画URLごとにまとめ、最初の試合の開始〜最後の試合の終了までを埋め込む
+  function divisionVideos(div) {
+    const groups = new Map();
+    for (const m of div.matches.filter((x) => x.video && x.video.url)) {
+      const key = parseYouTube(m.video.url) || m.video.url;
+      if (!groups.has(key)) groups.set(key, { url: m.video.url, start: Infinity, end: 0, open: false, count: 0 });
+      const g = groups.get(key);
+      g.start = Math.min(g.start, m.video.start | 0);
+      if (m.video.end) g.end = Math.max(g.end, m.video.end | 0); else g.open = true;
+      g.count++;
+    }
+    if (!groups.size) return '';
+    const vs = [...groups.values()].sort((x, y) => x.start - y.start);
+    return `<section><h2>大会動画 <small>${esc(S.cls(div.classId).name)} ${ARM[div.arm]}</small></h2>
+      <div class="stack">${vs.map((g) => `<div>${vs.length > 1 ? `<p class="muted small">${g.count}試合</p>` : ''}${videoPlayer({ url: g.url, start: g.start, end: g.open ? 0 : g.end })}</div>`).join('')}</div></section>`;
+  }
+
   function videoThumb(m) {
     const yt = m.video && parseYouTube(m.video.url);
     const A = S.athlete(m.a), B = S.athlete(m.b), t = S.tournament(m.tournamentId);
@@ -381,8 +398,7 @@
         <p class="muted">${t.sample ? chip('サンプル', 'sample') + ' ' : ''}${t.organizer ? orgChip(t) + ' ' : ''}${fmtPeriod(t)} ・ ${esc(t.venue)} ・ ${esc(t.level)}</p>
       </header>
       <div class="tabs">${cids.map((cc) => tab(cc, armFor(cc), S.cls(cc).name, cc === c)).join('')}</div>
-      <div class="tabs sub">${arms.map((aa) => tab(c, aa, ARM[aa], aa === arm)).join('')}<span class="chip fmt">${esc(S.formatName(div.format))}</span>
-        <button type="button" class="btn xs export-btn" id="exportVideos"${videoCount ? '' : ' disabled title="この階級には動画が登録されていません"'}>全動画データ出力（${videoCount}件）</button></div>
+      <div class="tabs sub">${arms.map((aa) => tab(c, aa, ARM[aa], aa === arm)).join('')}<span class="chip fmt">${esc(S.formatName(div.format))}</span></div>
 
       <section class="card result-card">
         ${div.incomplete ? `<p class="partial-note">この部門の試合データは一部欠けています。${esc(div.note)}</p>` : ''}
@@ -394,9 +410,14 @@
         ${podium(div)}
       </section>
 
+      ${divisionVideos(div)}
+
       ${multiClassSection(id, arm)}
 
-      <section><h2>試合一覧</h2>${matchList(div.matches)}</section>`,
+      <section><h2>試合一覧</h2>${matchList(div.matches)}</section>
+
+      <div class="export-foot">
+        <button type="button" class="btn xs" id="exportVideos"${videoCount ? '' : ' disabled title="この階級には動画が登録されていません"'}>全動画データ出力（${videoCount}件）</button></div>`,
       mount(root) {
         const btn = root.querySelector('#exportVideos');
         if (!btn) return;
@@ -507,9 +528,16 @@
         <div class="stat"><span>通算成績</span><strong>${s.wins}勝 ${s.losses}敗</strong></div>
         <div class="stat"><span>勝率</span><strong>${pct(s.wins, s.total)}%</strong></div>
         <div class="stat"><span>優勝 / 入賞(3位以内)</span><strong>${s.titles} / ${s.medals}</strong></div>
-        <div class="stat"><span>ピン勝ち率</span><strong>${pct(s.pins, s.wins)}%</strong></div>
-        <div class="stat"><span>現在</span><strong>${s.streak ? `${s.streak.count}${s.streak.win ? '連勝' : '連敗'}` : '-'}</strong></div>
-      </div>
+        <div class="stat"><span>ピン勝ち率</span><strong>${pct(s.pins, s.wins)}%</strong></div>      </div>
+
+      ${s.detail.recorded ? `<div class="stats stats-6">
+        <div class="stat"><span>詳細記載</span><strong>${s.detail.recorded}/${s.detail.total}</strong></div>
+        <div class="stat"><span>ファール数</span><strong>${s.detail.fouls}/${s.detail.recorded}</strong></div>
+        <div class="stat"><span>ワーニング数</span><strong>${s.detail.warnings}/${s.detail.recorded}</strong></div>
+        <div class="stat"><span>ストラップ申請回数</span><strong>${s.detail.strapRequests}/${s.detail.recorded}</strong></div>
+        <div class="stat"><span>ストラップ回数</span><strong>${s.detail.straps}/${s.detail.recorded}</strong></div>
+        <div class="stat"><span>レフリーズグリップ回数</span><strong>${s.detail.refereeGrips}/${s.detail.recorded}</strong></div>
+      </div>` : ''}
 
       <section class="card">
         <h2>大会成績</h2>
@@ -597,6 +625,12 @@
     const others = h.matches.filter((x) => x.id !== m.id);
     const sameDiv = S.matches({ divKey: m.divKey }).filter((x) => x.id !== m.id);
     const divHref = `#/tournaments/${t.id}?c=${m.classId}&arm=${m.arm}`;
+    const dt = m.detail || {};
+    const detailVal = (v) => (v == null || v === '' ? '<span class="muted">未記入</span>' : esc(String(v)));
+    // 左選手 - 右選手 の形式（対戦成績と同じ並び）。[a, b] または { 選手ID: 数 } で指定
+    const pairVal = (p) => { const v = S.detailPair(m, p); return v.length ? `${detailVal(v[0])} - ${detailVal(v[1])}` : detailVal(null); };
+    // 詳細が1つも入っていない試合は「詳細：未記入」の1行にまとめる
+    const hasDetail = S.hasDetail(m);
 
     const fighter = (x) => {
       const s = S.athleteStats(x.id);
@@ -640,6 +674,12 @@
             <dl class="facts">
               <div><dt>試合区分</dt><dd>${esc(m.label)}</dd></div>
               <div><dt>決着</dt><dd>${esc(m.method)}</dd></div>
+              ${hasDetail ? `<div><dt>ファール数</dt><dd>${pairVal(dt.fouls)}</dd></div>
+              <div><dt>ワーニング数</dt><dd>${pairVal(dt.warnings)}</dd></div>
+              <div><dt>ストラップ申請</dt><dd>${detailVal(dt.strapRequest)}</dd></div>
+              <div><dt>ストラップ</dt><dd>${detailVal(dt.strap)}</dd></div>
+              <div><dt>レフリーズグリップ</dt><dd>${detailVal(dt.refereeGrip)}</dd></div>` : `<div><dt>詳細</dt><dd>${detailVal(null)}</dd></div>`}
+              <div><dt>備考</dt><dd>${detailVal(dt.remark)}</dd></div>
               ${m.note ? `<div><dt>備考</dt><dd>${esc(m.note)}</dd></div>` : ''}
               <div><dt>大会形式</dt><dd>${esc(S.formatName(m.format))}</dd></div>
               <div><dt>大会</dt><dd><a href="${divHref}">${esc(t.name)}</a></dd></div>
@@ -724,6 +764,8 @@
       const wins = (id, arm) => all.filter((m) => m.winner === id && (!arm || m.arm === arm)).length;
       const aw = wins(st.a), bw = wins(st.b);
       const cmp = (label, va, vb, hi = true) => `<tr><td class="${hi && va > vb ? 'pos' : ''}">${va}</td><th>${label}</th><td class="${hi && vb > va ? 'pos' : ''}">${vb}</td></tr>`;
+      // 試合詳細の集計（2人の対戦のうち詳細記載のある試合）
+      const da = S.detailStats(st.a, all), db = S.detailStats(st.b, all);
       return `
         <div class="card h2h-head">
           <a href="#/athletes/${A.id}" class="h2h-side">${photo(A, 'xl', A.name)}${nameLines(A)}${nick(A)}<small class="muted">${subInfo(A)}</small></a>
@@ -736,6 +778,12 @@
           ${cmp('左腕の勝利数', wins(st.a, 'L'), wins(st.b, 'L'))}
           ${cmp('右腕の勝利数', wins(st.a, 'R'), wins(st.b, 'R'))}
           ${cmp('勝率（全体・%）', pct(aw, all.length), pct(bw, all.length))}
+          ${da.recorded ? `${cmp('試合詳細記載数', da.recorded, db.recorded, false)}
+          ${cmp('ファール総数', da.fouls, db.fouls, false)}
+          ${cmp('ワーニング総数', da.warnings, db.warnings, false)}
+          ${cmp('ストラップ申請総数', da.strapRequests, db.strapRequests, false)}
+          ${cmp('ストラップ総数', da.straps, db.straps, false)}
+          ${cmp('レフリーズグリップ総数', da.refereeGrips, db.refereeGrips, false)}` : ''}
         </tbody></table></div>
         <section><h2>直接対決の試合</h2>${total ? matchList(h.matches, st.a) : empty(`この2人の${armLabel}での対戦記録はありません`)}</section>`;
     };

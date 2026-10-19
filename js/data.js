@@ -11,6 +11,8 @@
 //               実データは次の形式で書いてください:
 //               { id: 't1-M70-R-W1-1', round: 'W', no: 1, slot: 1, a: 'a01', b: 'a10', winner: 'a01', method: 'ピン勝ち' }
 //               round は下の rounds の id、no は回戦（本戦・敗者復活戦・予選のみ）、slot はその回戦内の番号。
+//               試合詳細は detail に書きます（省略した項目は「未記入」と表示。fouls / warnings は [左選手(a), 右選手(b)]）:
+//               detail: { fouls: [1, 0], warnings: [0, 2], strapRequest: '左選手', strap: 'あり', refereeGrip: 'あり', remark: '...' }
 //
 // ■ 動画 videos
 //   { 試合ID: { url: 'https://www.youtube.com/watch?v=XXXXXXXXXXX', start: 秒 } }
@@ -664,6 +666,20 @@ window.AW_DATA = {
       ],
     },
   ],
+
+  // 試合詳細（自動生成された試合など、matches に直接書けない試合用）{ 試合ID: detail }
+  // fouls / warnings は { 選手ID: 数 } でも指定できます
+  details: {
+    // 仮データ: 秋季オープン 男子 -70kg 右腕 決勝1回目
+    't3-M70-R-F': {
+      fouls: { a01: 1, a02: 0 },    // 佐藤 剛 1、鈴木 拓海 0
+      warnings: { a01: 3, a02: 1 }, // 佐藤 剛 3、鈴木 拓海 1
+      strapRequest: 'なし',
+      strap: 'あり',
+      refereeGrip: 'なし',
+      remark: '佐藤剛のアーリースタートが目立つ試合でした。',
+    },
+  },
 
   videos: {
     // 2024 WAF世界選手権 マスターズ男子 -80kg 左腕・右腕（「入力データ」シートの時刻を秒に換算）
