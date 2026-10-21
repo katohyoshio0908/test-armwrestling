@@ -518,8 +518,7 @@
             ${a.latestWeight != null ? chip(`直近の計量: ${kg(a.latestWeight)}`) : ''}
             ${a.team ? chip(a.team) : ''}
           </div>
-          <p>${esc(a.bio)}</p>
-          ${a.classIds.length > 1 ? `<p class="small">出場したことのある階級: <strong>${a.classIds.map((c) => esc(S.cls(c).name)).join(' / ')}</strong></p>` : ''}
+          <p>${esc(a.bio)}</p>          ${a.classIds.length > 1 ? `<p class="small">出場したことのある階級: <strong>${a.classIds.map((c) => esc(S.cls(c).name)).join(' / ')}</strong></p>` : ''}
           <p class="muted small">※ 利き腕は大会の出場記録（右腕のみ / 左腕のみ / 両腕）から判定しています。</p>
         </div>
       </header>
@@ -679,8 +678,7 @@
               <div><dt>ストラップ申請</dt><dd>${detailVal(dt.strapRequest)}</dd></div>
               <div><dt>ストラップ</dt><dd>${detailVal(dt.strap)}</dd></div>
               <div><dt>レフリーズグリップ</dt><dd>${detailVal(dt.refereeGrip)}</dd></div>` : `<div><dt>詳細</dt><dd>${detailVal(null)}</dd></div>`}
-              <div><dt>備考</dt><dd>${detailVal(dt.remark)}</dd></div>
-              ${m.note ? `<div><dt>備考</dt><dd>${esc(m.note)}</dd></div>` : ''}
+              <div><dt>備考</dt><dd>${[dt.remark, m.note].some((v) => v) ? [dt.remark, m.note].filter((v) => v).map((v) => esc(v)).join('<br>') : detailVal(null)}</dd></div>
               <div><dt>大会形式</dt><dd>${esc(S.formatName(m.format))}</dd></div>
               <div><dt>大会</dt><dd><a href="${divHref}">${esc(t.name)}</a></dd></div>
               <div><dt>日付・会場</dt><dd>${fmtPeriod(t)} ${esc(t.venue)}</dd></div>
